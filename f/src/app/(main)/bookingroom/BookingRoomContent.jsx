@@ -2,7 +2,6 @@
 
 import { useSearchParams } from 'next/navigation'
 import React, { useMemo } from 'react'
-import { meetingrooms as allMeetingrooms } from '@/lib/mockdata'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
@@ -50,6 +49,7 @@ const BookingRoomContent = () => {
   const searchParams = useSearchParams()
   const query = searchParams.get('q') || ''
   const size = searchParams.get('size') || 'all'
+  const allMeetingrooms = [] // Mock data removed - use API instead
 
   const filteredRooms = useMemo(() => {
     if (!Array.isArray(allMeetingrooms)) {

@@ -1,9 +1,10 @@
-'use client'; // This component uses hooks, so it must be a client component.
+'use client';
 import React from 'react'
-import DashboardComponent from '@/app/(main)/dashboard/page'
+import { redirect } from 'next/navigation'
 
 const StaffPage = () => {
-  return <DashboardComponent title="Staff Dashboard" />
+  redirect('/dashboard/officer')
+  return null
 }
 
 export default StaffPage

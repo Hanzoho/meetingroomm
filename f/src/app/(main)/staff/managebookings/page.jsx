@@ -25,7 +25,6 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { bookings as allBookings, meetingrooms } from '@/lib/mockdata'
 import { format } from 'date-fns'
 import { th } from 'date-fns/locale'
 import { MoreHorizontal, Search } from 'lucide-react'
@@ -35,7 +34,9 @@ import { Input } from '@/components/ui/input'
 const ManageBookingsPage = () => {
   const [statusFilter, setStatusFilter] = useState('All')
   const [searchTerm, setSearchTerm] = useState('')
-  // ✅ ป้องกัน meetingrooms undefined
+  // Mock data removed - use API instead
+  const allBookings = []
+  const meetingrooms = []
   const roomMap = useMemo(() => {
     if (!meetingrooms || !Array.isArray(meetingrooms)) return new Map()
     return new Map(meetingrooms.map((room) => [room.id, room.name]))
