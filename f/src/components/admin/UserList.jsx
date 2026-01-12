@@ -79,7 +79,7 @@ export default function UserList({
           
           // สร้าง URL รูปโปรไฟล์ตาม role
           const profileImageUrl = user.profile_image 
-            ? `${process.env.NEXT_PUBLIC_API_URL}/api/upload/profile-image/${userId}/${user.role}`
+            ? `/api/upload/profile-image/${userId}/${user.role}`
             : null;
           
           return (

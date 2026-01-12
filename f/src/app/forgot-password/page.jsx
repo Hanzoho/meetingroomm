@@ -28,7 +28,7 @@ const ForgotPasswordPage = () => {
     try {
       console.log('🔄 ตรวจสอบอีเมลในระบบ:', email)
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/forgot-password`, {
+      const response = await fetch(`/api/auth/forgot-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

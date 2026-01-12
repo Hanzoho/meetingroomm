@@ -190,7 +190,7 @@ const MeetingroomDetail = ({ meetingroom }) => {
       console.log('Sending booking data:', bookingData)
 
       // ส่งข้อมูลไปยัง API
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/protected/reservations`, {
+      const response = await fetch(`/api/protected/reservations`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

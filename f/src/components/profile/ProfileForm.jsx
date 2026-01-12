@@ -25,7 +25,7 @@ export default function ProfileForm({ userRole = 'user', requiredRole = null }) 
   const [pendingImageFile, setPendingImageFile] = useState(null)
   const [pendingImagePreview, setPendingImagePreview] = useState(null)
   
-  const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_API_URL
+  const BACKEND_BASE_URL = '' // ใช้ /api แทน
 
   // Address editing state - เก็บไว้สำหรับ sync กับ AddressSelector
   const [tempAddressData, setTempAddressData] = useState({

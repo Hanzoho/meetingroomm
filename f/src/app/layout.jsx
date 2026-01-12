@@ -20,8 +20,6 @@ export default function RootLayout({ children }) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-touch-fullscreen" content="yes" />
-        <link rel="preconnect" href={process.env.NEXT_PUBLIC_API_URL} />
-        <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_API_URL} />
       </head>
       <body className={geistSans.variable}>
         <ThemeProvider

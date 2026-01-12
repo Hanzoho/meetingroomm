@@ -117,7 +117,7 @@ export default function PendingUsersTab({ onSuccess }) {
     try {
       setLoading(true)
       const token = authUtils.getToken()
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/protected/admin/pending-users`, {
+      const response = await fetch(`/api/protected/admin/pending-users`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -160,7 +160,7 @@ export default function PendingUsersTab({ onSuccess }) {
           setTimeout(() => reject(new Error('การอนุมัติใช้เวลานานเกินไป (เชื่อมต่อเมลเซิร์ฟเวอร์ช้า)')), 15000)
         )
 
-        const fetchPromise = fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/protected/admin/approve-user`, {
+        const fetchPromise = fetch(`/api/protected/admin/approve-user`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -241,7 +241,7 @@ export default function PendingUsersTab({ onSuccess }) {
           setTimeout(() => reject(new Error('การปฏิเสธใช้เวลานานเกินไป (เชื่อมต่อเมลเซิร์ฟเวอร์ช้า)')), 15000)
         )
 
-        const fetchPromise = fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/protected/admin/reject-user`, {
+        const fetchPromise = fetch(`/api/protected/admin/reject-user`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,

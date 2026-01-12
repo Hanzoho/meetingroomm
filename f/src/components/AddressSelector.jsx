@@ -13,8 +13,8 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Loader2, AlertCircle, MapPin, Search } from 'lucide-react'
 
-// API Base URL
-const API_BASE = `${process.env.NEXT_PUBLIC_API_URL}/api`
+// API Base URL - ใช้ API Proxy
+const API_BASE = '/api'
 
 // ===================================================================
 // Address API Hooks

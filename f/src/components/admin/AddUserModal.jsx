@@ -86,7 +86,7 @@ export default function AddUserModal({ isOpen, onClose, onSuccess }) {
         const token = authUtils.getToken()
 
         // Check email
-        const emailResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/protected/admin/check-email`, {
+        const emailResponse = await fetch(`/api/protected/admin/check-email`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -155,7 +155,7 @@ export default function AddUserModal({ isOpen, onClose, onSuccess }) {
       }
 
       const token = authUtils.getToken()
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/protected/admin/users`, {
+      const response = await fetch(`/api/protected/admin/users`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

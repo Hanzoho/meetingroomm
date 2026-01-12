@@ -30,7 +30,7 @@ export default function LayoutForMainPages({ children }) {
     try {
       console.log('🔄 Layout: Refreshing user data...')
       
-      
+
       // เรียก API เพื่อดึงข้อมูลใหม่
       const response = await authAPI.getProfile()
       console.log('📦 Layout: Profile API response:', response)
@@ -59,9 +59,8 @@ export default function LayoutForMainPages({ children }) {
         
         setUser(updatedProfile)
         
-        // อัปเดต localStorage ด้วย (แต่ไม่เก็บ profile_image ใน localStorage)
-        const { profile_image, ...profileForStorage } = updatedProfile
-        localStorage.setItem('user', JSON.stringify(profileForStorage))
+        // อัปเดต localStorage ด้วย (รวม profile_image เพื่อ TopBar จะได้แสดงรูปถูกต้อง)
+        localStorage.setItem('user', JSON.stringify(updatedProfile))
       }
     } catch (error) {
       console.error('❌ Layout: Error refreshing user:', error)
@@ -127,6 +126,7 @@ export default function LayoutForMainPages({ children }) {
             if (isDataChanged) {
               console.log('🔄 Layout: Profile data changed, updating...')
               setUser(response.profile)
+              // เก็บข้อมูลทั้งหมด รวม profile_image
               localStorage.setItem('user', JSON.stringify(response.profile))
             } else {
               console.log('✅ Layout: Profile data unchanged, skipping update')

@@ -786,7 +786,7 @@ export default function MyReservationsPage() {
   const loadUserData = async (userData) => {
     try {
       
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/protected/reservations/my`, {
+      const response = await fetch(`/api/protected/reservations/my`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${authUtils.getToken()}`,

@@ -126,7 +126,7 @@ export default function UserRoomDetailModal({
                 <div className="w-full bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl overflow-hidden">
                   <img
                     key={`modal-img-${mappedRoom.room_id}`}
-                    src={`${process.env.NEXT_PUBLIC_API_URL}/api/rooms/image/${mappedRoom.room_id}${mappedRoom.imageTimestamp ? `?t=${mappedRoom.imageTimestamp}` : ''}`}
+                    src={`/api/rooms/image/${mappedRoom.room_id}${mappedRoom.imageTimestamp ? `?t=${mappedRoom.imageTimestamp}` : ''}`}
                     alt={mappedRoom.room_name}
                     className="w-full h-80 object-cover rounded-xl shadow-lg"
                     onError={(e) => {

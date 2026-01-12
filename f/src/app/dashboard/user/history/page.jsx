@@ -849,7 +849,7 @@ export default function HistoryPage() {
     try {
       // ดึงข้อมูลรายละเอียดจาก API
       const token = localStorage.getItem('token')
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/protected/reservations/${reservation.reservation_id}`, {
+      const response = await fetch(`/api/protected/reservations/${reservation.reservation_id}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,

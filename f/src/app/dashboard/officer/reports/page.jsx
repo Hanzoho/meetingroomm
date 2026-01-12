@@ -138,7 +138,7 @@ export default function OfficerReports() {
   const loadReports = async (period = dateRange) => {
     try {
       const token = authUtils.getToken()
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/protected/officer/reports?period=${period}`, {
+      const response = await fetch(`/api/protected/officer/reports?period=${period}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -161,7 +161,7 @@ export default function OfficerReports() {
   const loadReviews = async (page = 1, limit = 5) => {
     try {
       const token = authUtils.getToken()
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/protected/officer/reviews?page=${page}&limit=${limit}`, {
+      const response = await fetch(`/api/protected/officer/reviews?page=${page}&limit=${limit}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -194,7 +194,7 @@ export default function OfficerReports() {
     try {
       const token = authUtils.getToken()
       const statusParam = status === 'all' ? 'all' : status
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/protected/officer/approval-history?page=${page}&limit=${limit}&status=${statusParam}`, {
+      const response = await fetch(`/api/protected/officer/approval-history?page=${page}&limit=${limit}&status=${statusParam}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -233,7 +233,7 @@ export default function OfficerReports() {
   const loadApprovalStats = async () => {
     try {
       const token = authUtils.getToken()
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/protected/officer/approval-history?page=1&limit=1000&status=all`, {
+      const response = await fetch(`/api/protected/officer/approval-history?page=1&limit=1000&status=all`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,

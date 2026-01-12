@@ -610,7 +610,7 @@ export default function EditBookingPage({ params }) {
 
         try {
           const calendarResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/calendar/${selectedRoom.room_id}?month=${month}&year=${year}&detailed=true`,
+            `/api/reservations/calendar/${selectedRoom.room_id}?month=${month}&year=${year}&detailed=true`,
             {
               headers: {
                 'Authorization': `Bearer ${token}`
@@ -640,9 +640,11 @@ export default function EditBookingPage({ params }) {
 
               console.log(`⏰ [EDIT-BOOKING] ตรวจสอบเวลา ${startHour}:00-${endHour}:00`)
 
-              // หา slot ที่ตรงกับเวลาที่เลือก
-              const hasConflict = dayData.slots.some(slot => {
-                if (!slot.start_time || !slot.end_time) return false
+              // หา slot ที่ตรงกับเวลาที่เลือก และเก็บเวลาที่ชนกัน
+              const conflictingSlots = []
+              
+              dayData.slots.forEach(slot => {
+                if (!slot.start_time || !slot.end_time) return
 
                 const slotStartHour = parseInt(slot.start_time.split(':')[0])
                 const slotEndHour = parseInt(slot.end_time.split(':')[0])
@@ -688,20 +690,30 @@ export default function EditBookingPage({ params }) {
 
                 if (conflict) {
                   console.log(`⚠️ [EDIT-BOOKING] Conflict detected! Slot ${slotStartHour}:00-${slotEndHour}:00 is not available`)
+                  // เก็บเวลาที่จองแล้วจริงๆ (ไม่ใช่เวลาที่ user ขอจอง)
+                  conflictingSlots.push({
+                    start: slot.start_time,
+                    end: slot.end_time
+                  })
                 }
-
-                return conflict
               })
+              
+              const hasConflict = conflictingSlots.length > 0
 
               if (hasConflict) {
                 console.log(`❌ [EDIT-BOOKING] วันที่ ${date} มีการจองซ้อน`)
+                // แสดงเวลาที่จองจริงๆ (ไม่ใช่เวลาที่ user ขอจอง) และตัดวินาทีออก
+                const conflictTimeRanges = conflictingSlots.map(s => 
+                  `${s.start.substring(0, 5)}-${s.end.substring(0, 5)}`
+                ).join(', ')
+                
                 conflictDates.push({
                   date: date,
                   dateLabel: dateObj.toLocaleDateString('th-TH', {
                     day: 'numeric',
                     month: 'short'
                   }),
-                  time: `${startTime}-${endTime}`,
+                  time: conflictTimeRanges,
                   error: 'มีการจองแล้ว'
                 })
               } else {

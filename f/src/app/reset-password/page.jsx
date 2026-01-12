@@ -63,7 +63,7 @@ const ResetPasswordPage = () => {
     try {
       console.log('🔄 ส่งคำขอรีเซ็ตรหัสผ่าน...')
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/reset-password`, {
+      const response = await fetch(`/api/auth/reset-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

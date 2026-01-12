@@ -141,7 +141,7 @@ export default function UserManagement() {
             const token = authUtils.getToken()
             if (!token) return
 
-            const url = `${process.env.NEXT_PUBLIC_API_URL}/api/protected/admin/stats`
+            const url = `/api/protected/admin/stats`
             const response = await fetch(url, {
                 method: 'GET',
                 headers: {
@@ -178,7 +178,7 @@ export default function UserManagement() {
             const token = authUtils.getToken()
             if (!token) return
 
-            const url = `${process.env.NEXT_PUBLIC_API_URL}/api/protected/admin/users`
+            const url = `/api/protected/admin/users`
             const response = await fetch(url, {
                 method: 'GET',
                 headers: {
@@ -200,7 +200,7 @@ export default function UserManagement() {
                     data.data.forEach((user, index) => {
                         const userId = user.user_id || user.officer_id || user.executive_id || user.admin_id
                         const hasProfileImage = user.profile_image ? 'มี' : 'ไม่มี'
-                        const profileURL = user.profile_image ? `${process.env.NEXT_PUBLIC_API_URL}/api/upload/profile-image/${userId}/${user.role}` : 'ไม่มี'
+                        const profileURL = user.profile_image ? `/api/upload/profile-image/${userId}/${user.role}` : 'ไม่มี'
                         console.log(`🖼️ [loadUsers] User ${index + 1}: ${user.first_name} ${user.last_name} - ID: ${userId}, Role: ${user.role}, Profile: ${hasProfileImage}, URL: ${profileURL}`)
                     })
                     setUsers(data.data)
@@ -309,7 +309,7 @@ export default function UserManagement() {
 
         try {
             const token = authUtils.getToken()
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/protected/admin/users/${userId}`, {
+            const response = await fetch(`/api/protected/admin/users/${userId}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`,

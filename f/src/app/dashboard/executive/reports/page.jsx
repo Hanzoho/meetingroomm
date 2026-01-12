@@ -72,7 +72,7 @@ export default function ExecutiveReports() {
       
       // Connect to Executive Reports API
       const token = authUtils.getToken()
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/protected/executive/reports`, {
+      const response = await fetch(`/api/protected/executive/reports`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,

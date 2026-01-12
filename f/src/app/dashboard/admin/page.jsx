@@ -93,7 +93,7 @@ export default function AdminDashboard() {
         return
       }
 
-      const url = `${process.env.NEXT_PUBLIC_API_URL}/api/protected/admin/stats`
+      const url = `/api/protected/admin/stats`
       console.log('🌐 [loadStats] เรียก API:', url)
       
       const response = await fetch(url, {
@@ -160,7 +160,7 @@ export default function AdminDashboard() {
         return
       }
 
-      const url = `${process.env.NEXT_PUBLIC_API_URL}/api/protected/admin/department-stats`
+      const url = `/api/protected/admin/department-stats`
       console.log('🌐 [loadDepartmentStats] เรียก API:', url)
       
       const response = await fetch(url, {

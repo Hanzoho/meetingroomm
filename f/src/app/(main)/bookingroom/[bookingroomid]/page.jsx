@@ -5,8 +5,9 @@ import MeetingroomDetail from '@/components/meetingroom-detail'
 // ✅ generateStaticParams — ป้องกันล้มถ้า array undefined  
 export async function generateStaticParams() {
   try {
-    // ดึงข้อมูลห้องจริงจาก API
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/rooms`)
+    // ดึงข้อมูลห้องจริงจาก API (server-side ต้องใช้ absolute URL)
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5580'
+    const response = await fetch(`${baseUrl}/api/rooms`)
     const data = await response.json()
     
     if (!data.rooms || !Array.isArray(data.rooms)) {
@@ -28,8 +29,9 @@ export async function generateMetadata(props) {
   const { bookingroomid } = props.params
 
   try {
-    // ดึงข้อมูลห้องจริงจาก API
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/rooms/${bookingroomid}`)
+    // ดึงข้อมูลห้องจริงจาก API (server-side ต้องใช้ absolute URL)
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5580'
+    const response = await fetch(`${baseUrl}/api/rooms/${bookingroomid}`)
     const data = await response.json()
 
     if (!response.ok || !data.room) {
@@ -55,7 +57,7 @@ const BookingDetailPage = async (props) => {
 
   try {
     // ดึงข้อมูลห้องจริงจาก API
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/rooms/${bookingroomid}`, {
+    const response = await fetch(`/api/rooms/${bookingroomid}`, {
       cache: 'no-store' // ไม่ cache เพื่อให้ได้ข้อมูลล่าสุด
     })
     const data = await response.json()

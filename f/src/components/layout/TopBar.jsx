@@ -88,7 +88,7 @@ export default function TopBar({ user, onMenuClick }) {
       const token = authUtils.getToken()
       if (!token) return false
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/protected/notifications/${notificationId}/read`, {
+      const response = await fetch(`/api/protected/notifications/${notificationId}/read`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -137,7 +137,7 @@ export default function TopBar({ user, onMenuClick }) {
       const token = authUtils.getToken()
       if (!token) return false
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/protected/notifications/${notificationId}`, {
+      const response = await fetch(`/api/protected/notifications/${notificationId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -210,7 +210,7 @@ export default function TopBar({ user, onMenuClick }) {
       const token = authUtils.getToken()
       if (!token) return
       
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/protected/reservations/${notification.reservation_id || notification.id}`, {
+      const response = await fetch(`/api/protected/reservations/${notification.reservation_id || notification.id}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -249,8 +249,25 @@ export default function TopBar({ user, onMenuClick }) {
 
   // อัพเดต avatar URL เมื่อ user เปลี่ยน
   useEffect(() => {
-    // 🔥 ใช้ ID ที่ถูกต้องตาม role
-    const currentUserId = user?.user_id || user?.officer_id || user?.admin_id || user?.executive_id
+    // 🔥 เลือก ID ที่ถูกต้องตาม role (ไม่ใช้ || เพราะจะเลือกผิด)
+    let currentUserId = null
+    const userRole = user?.role || 'user'
+    
+    switch(userRole) {
+      case 'officer':
+        currentUserId = user?.officer_id
+        break
+      case 'admin':
+        currentUserId = user?.admin_id
+        break
+      case 'executive':
+        currentUserId = user?.executive_id
+        break
+      case 'user':
+      default:
+        currentUserId = user?.user_id
+        break
+    }
     
     // 🔥 สร้าง image URL เองถ้าไม่มี profile_image หรือมี currentUserId
     if (currentUserId) {
@@ -258,19 +275,21 @@ export default function TopBar({ user, onMenuClick }) {
       
       // ถ้าไม่มี profile_image ให้สร้าง default URL เอง พร้อม role parameter
       if (!finalImageUrl) {
-        const userRole = user?.role || 'user'
         finalImageUrl = `/api/upload/profile-image/${currentUserId}/${userRole}`
       }
       
       // ตรวจสอบว่า profile_image เป็น string หรือ object
       const profileImagePath = typeof finalImageUrl === 'string' 
         ? finalImageUrl 
-        : finalImageUrl?.path || finalImageUrl?.url || finalImageUrl?.final_profile_image
+        : finalImagePath?.path || finalImagePath?.url || finalImagePath?.final_profile_image
         
       if (profileImagePath && typeof profileImagePath === 'string') {
         // ใช้ cache busting เฉพาะเมื่อมีการ update รูปใหม่
+        // ถ้า path ไม่มี /api prefix ให้เพิ่มเข้าไป
         let finalUrl = profileImagePath.startsWith('/api/') 
-          ? `${process.env.NEXT_PUBLIC_API_URL}${profileImagePath}`
+          ? profileImagePath
+          : profileImagePath.startsWith('/')
+          ? `/api${profileImagePath}`
           : getStaticFileUrl(profileImagePath)
         
         // เพิ่ม cache busting เฉพาะเมื่อมี _imageUpdate (มีการอัพโหลดรูปใหม่)
@@ -338,9 +357,9 @@ export default function TopBar({ user, onMenuClick }) {
         return
       }
       
-      const endpoint = role === 'officer' ? '/api/protected/notifications/officer' : '/api/protected/notifications/user'
+      const endpoint = role === 'officer' ? '/protected/notifications/officer' : '/protected/notifications/user'
       
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${endpoint}`, {
+      const response = await fetch(`/api${endpoint}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

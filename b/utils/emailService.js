@@ -173,7 +173,8 @@ const sendEmail = async (to, subject, html, text = '') => {
 
 // Helper function สำหรับสร้างข้อมูลวันที่
 const formatReservationDates = (reservation) => {
-  console.log('🔍 Full Reservation data:', JSON.stringify(reservation, null, 2))
+  // ลบ log ที่แสดง Buffer ของรูปภาพออกมา (เยอะเกินไป)
+  // console.log('🔍 Full Reservation data:', JSON.stringify(reservation, null, 2))
 
   const allDates = []
 

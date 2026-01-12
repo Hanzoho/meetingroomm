@@ -597,7 +597,7 @@ function BookingInfo({ selectedRoom, selectedDates, showAlertModal }) {
 
         try {
           const calendarResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/calendar/${selectedRoom.room_id}?month=${month}&year=${year}&detailed=true`,
+            `/api/reservations/calendar/${selectedRoom.room_id}?month=${month}&year=${year}&detailed=true`,
             {
               headers: {
                 'Authorization': `Bearer ${token}`
@@ -627,9 +627,11 @@ function BookingInfo({ selectedRoom, selectedDates, showAlertModal }) {
 
               console.log(`⏰ [RESERVE] ตรวจสอบเวลา ${startHour}:00-${endHour}:00`)
 
-              // หา slot ที่ตรงกับเวลาที่เลือก
-              const hasConflict = dayData.slots.some(slot => {
-                if (!slot.start_time || !slot.end_time) return false
+              // หา slot ที่ conflict พร้อมเก็บข้อมูลเวลา
+              let conflictingSlots = []
+              
+              dayData.slots.forEach(slot => {
+                if (!slot.start_time || !slot.end_time) return
 
                 const slotStartHour = parseInt(slot.start_time.split(':')[0])
                 const slotEndHour = parseInt(slot.end_time.split(':')[0])
@@ -642,20 +644,29 @@ function BookingInfo({ selectedRoom, selectedDates, showAlertModal }) {
 
                 if (conflict) {
                   console.log(`⚠️ [RESERVE] Conflict detected! Slot ${slotStartHour}:00-${slotEndHour}:00 is not available`)
+                  conflictingSlots.push({
+                    start: slot.start_time,
+                    end: slot.end_time
+                  })
                 }
-
-                return conflict
               })
 
-              if (hasConflict) {
+              if (conflictingSlots.length > 0) {
                 console.log(`❌ [RESERVE] วันที่ ${date} มีการจองซ้อน`)
+                // แสดงเวลาของ slot ที่ conflict (ไม่ใช่เวลาที่ user เลือก)
+                // ตัดวินาทีออก: "08:00:00" → "08:00"
+                const conflictTimes = conflictingSlots.map(s => {
+                  const startTime = s.start.substring(0, 5) // ตัด :00 วินาทีออก
+                  const endTime = s.end.substring(0, 5)
+                  return `${startTime}-${endTime}`
+                }).join(', ')
                 conflictDates.push({
                   date: date,
                   dateLabel: dateObj.toLocaleDateString('th-TH', {
                     day: 'numeric',
                     month: 'short'
                   }),
-                  time: `${startTime}-${endTime}`,
+                  time: conflictTimes, // 🔥 แสดงเวลาที่มีการจองอยู่แล้ว
                   error: 'มีการจองแล้ว'
                 })
               } else {
@@ -771,7 +782,7 @@ function BookingInfo({ selectedRoom, selectedDates, showAlertModal }) {
 
       console.log('📤 [RESERVE] ส่งข้อมูลการจอง Multi-day:', bookingData)
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/protected/reservations`, {
+      const response = await fetch(`/api/protected/reservations`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

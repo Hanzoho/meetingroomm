@@ -85,7 +85,7 @@ export default function ExecutiveStatistics() {
 
       // Connect to Executive Reports API (ใช้ BASE URL จาก env)
       const token = authUtils.getToken()
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/protected/executive/reports`, {
+      const response = await fetch(`/api/protected/executive/reports`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,

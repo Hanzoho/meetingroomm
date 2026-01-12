@@ -222,7 +222,7 @@ function OfficerRoomsPage() {
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 วินาที (เพิ่มจาก 15)
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/protected/officer/rooms`, {
+      const response = await fetch(`/api/protected/officer/rooms`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
@@ -343,7 +343,7 @@ function OfficerRoomsPage() {
     if (roomHasImage) {
       // Room has image - set preview to API endpoint URL with cache busting
       const timestamp = room.imageTimestamp || (room.updated_at ? new Date(room.updated_at).getTime() : Date.now())
-      const imageUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/rooms/image/${room.room_id}?t=${timestamp}`
+      const imageUrl = `/api/rooms/image/${room.room_id}?t=${timestamp}`
       setImagePreview(imageUrl)
     } else {
       // Room has no image - clear preview
@@ -405,7 +405,7 @@ function OfficerRoomsPage() {
 
   const performDeleteRoom = async (roomId) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/protected/officer/rooms/${roomId}`, {
+      const response = await fetch(`/api/protected/officer/rooms/${roomId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -499,8 +499,8 @@ function OfficerRoomsPage() {
       }
 
       const url = selectedRoom
-        ? `${process.env.NEXT_PUBLIC_API_URL}/api/protected/officer/rooms/${selectedRoom.room_id}`
-        : `${process.env.NEXT_PUBLIC_API_URL}/api/protected/officer/rooms`
+        ? `/api/protected/officer/rooms/${selectedRoom.room_id}`
+        : `/api/protected/officer/rooms`
 
       const method = selectedRoom ? 'PUT' : 'POST'
 
@@ -551,7 +551,7 @@ function OfficerRoomsPage() {
 
           try {
             const imageResponse = await fetch(
-              `${process.env.NEXT_PUBLIC_API_URL}/api/protected/officer/rooms/${roomId}/image`,
+              `/api/protected/officer/rooms/${roomId}/image`,
               {
                 method: 'PUT',
                 headers: {
@@ -567,7 +567,7 @@ function OfficerRoomsPage() {
 
               // อัพเดท UI
               const timestamp = Date.now()
-              setImagePreview(`${process.env.NEXT_PUBLIC_API_URL}/api/rooms/image/${roomId}?t=${timestamp}`)
+              setImagePreview(`/api/rooms/image/${roomId}?t=${timestamp}`)
 
               // รีเฟรช rooms list
               setTimeout(() => fetchRooms(user), 500)
@@ -586,7 +586,7 @@ function OfficerRoomsPage() {
 
           try {
             const deleteResponse = await fetch(
-              `${process.env.NEXT_PUBLIC_API_URL}/api/protected/officer/rooms/${roomId}/image`,
+              `/api/protected/officer/rooms/${roomId}/image`,
               {
                 method: 'DELETE',
                 headers: {
@@ -822,7 +822,7 @@ function OfficerRoomsPage() {
                       {/* 🖼️ Room Image - โหลดผ่าน API endpoint พร้อม cache busting เฉพาะกรณีที่จำเป็น */}
                       <img
                         key={`room-img-${room.room_id}`}
-                        src={`${process.env.NEXT_PUBLIC_API_URL}/api/rooms/image/${room.room_id}?t=${room.imageTimestamp ?? (room.updated_at ? new Date(room.updated_at).getTime() : Date.now())}`}
+                        src={`/api/rooms/image/${room.room_id}?t=${room.imageTimestamp ?? (room.updated_at ? new Date(room.updated_at).getTime() : Date.now())}`}
                         alt={room.room_name}
                         className="w-full h-full object-cover transition-transform duration-300 rounded-t-3xl"
                         onError={(e) => {

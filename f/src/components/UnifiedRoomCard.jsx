@@ -51,7 +51,7 @@ export function UnifiedRoomCard({
             {/* 🖼️ Room Image - โหลดผ่าน API endpoint */}
             <img
               key={`room-img-${mappedRoom.room_id}`}
-              src={`${process.env.NEXT_PUBLIC_API_URL}/api/rooms/image/${mappedRoom.room_id}${mappedRoom.imageTimestamp ? `?t=${mappedRoom.imageTimestamp}` : ''}`}
+              src={`/api/rooms/image/${mappedRoom.room_id}${mappedRoom.imageTimestamp ? `?t=${mappedRoom.imageTimestamp}` : ''}`}
               alt={mappedRoom.room_name}
               className="w-full h-full object-cover transition-transform duration-300 rounded-t-3xl"
               onError={(e) => {

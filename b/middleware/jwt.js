@@ -58,7 +58,7 @@ export const authMiddleware = async (request, set) => {
           position: true,
           department: true,
           zip_code: true,
-          // 🔥 ลบ profile_image: true และจะเพิ่ม path ทีหลัง
+          profile_image: true, // 🔥 เพิ่มกลับมาเพื่อให้ TopBar แสดงรูปถูกต้อง
           created_at: true,
           updated_at: true,
           // เพิ่มข้อมูล address
@@ -73,10 +73,13 @@ export const authMiddleware = async (request, set) => {
         }
       })
 
-      // 🔥 ไม่ส่ง profile_image ใน JWT response - ให้ frontend จัดการเอง
-      // if (user) {
-      //   user.profile_image = `/api/upload/profile-image/${user.user_id}`
-      // }
+      // 🔥 แปลง profile_image จาก Buffer เป็น path string เพื่อลด localStorage size
+      if (user) {
+        // ถ้ามี profile_image (เป็น Buffer) ให้แปลงเป็น path พร้อม role
+        user.profile_image = user.profile_image 
+          ? `/api/upload/profile-image/${user.user_id}/user`
+          : null
+      }
 
       // ถ้ามีข้อมูล address ให้ดึงชื่อจริงๆ มาด้วย
       if (user && (user.province_id || user.district_id || user.subdistrict_id)) {
@@ -119,7 +122,7 @@ export const authMiddleware = async (request, set) => {
           position: true,
           department: true,
           zip_code: true,
-          // 🔥 ลบ profile_image: true และจะเพิ่ม path ทีหลัง
+          profile_image: true, // 🔥 เพิ่มกลับมาเพื่อให้ TopBar แสดงรูปถูกต้อง
           created_at: true,
           updated_at: true,
           // เพิ่มข้อมูล address
@@ -184,7 +187,7 @@ export const authMiddleware = async (request, set) => {
           position: true,
           department: true,
           zip_code: true,
-          // 🔥 ลบ profile_image: true และจะเพิ่ม path ทีหลัง
+          profile_image: true, // 🔥 เพิ่มกลับมาเพื่อให้ TopBar แสดงรูปถูกต้อง
           created_at: true,
           updated_at: true,
           // เพิ่มข้อมูล address
@@ -202,11 +205,10 @@ export const authMiddleware = async (request, set) => {
       if (user) {
         console.log(`🔍 [JWT] Found admin: admin_id=${user.admin_id}, email=${user.email}`)
 
-        // 🔥 เพิ่ม profile_image เป็น path แทน binary
-        // 🔥 ไม่ส่ง profile_image ใน JWT response - ให้ frontend จัดการเอง
-        // user.profile_image = `/api/upload/profile-image/${user.admin_id}`
-
-        // ✅ ไม่ต้องเปลี่ยน admin_id เป็น user_id อีกแล้ว - ใช้ของตัวเอง
+        // 🔥 แปลง profile_image จาก Buffer เป็น path string พร้อม role
+        user.profile_image = user.profile_image 
+          ? `/api/upload/profile-image/${user.admin_id}/admin`
+          : null
 
         // ถ้ามีข้อมูล address ให้ดึงชื่อจริงๆ มาด้วย
         if (user.province_id || user.district_id || user.subdistrict_id) {
@@ -250,7 +252,7 @@ export const authMiddleware = async (request, set) => {
           position: true,
           department: true,
           zip_code: true,
-          // 🔥 ลบ profile_image: true และจะเพิ่ม path ทีหลัง
+          profile_image: true, // 🔥 เพิ่มกลับมาเพื่อให้ TopBar แสดงรูปถูกต้อง
           created_at: true,
           updated_at: true,
           // เพิ่มข้อมูล address
@@ -268,11 +270,10 @@ export const authMiddleware = async (request, set) => {
       if (user) {
         console.log(`🔍 [JWT] Found executive: executive_id=${user.executive_id}, email=${user.email}`)
 
-        // 🔥 เพิ่ม profile_image เป็น path แทน binary
-        // 🔥 ไม่ส่ง profile_image ใน JWT response - ให้ frontend จัดการเอง
-        // user.profile_image = `/api/upload/profile-image/${user.executive_id}`
-
-        // ✅ ไม่ต้องเปลี่ยน executive_id เป็น user_id อีกแล้ว - ใช้ของตัวเอง
+        // 🔥 แปลง profile_image จาก Buffer เป็น path string พร้อม role
+        user.profile_image = user.profile_image 
+          ? `/api/upload/profile-image/${user.executive_id}/executive`
+          : null
 
         // ถ้ามีข้อมูล address ให้ดึงชื่อจริงๆ มาด้วย
         if (user.province_id || user.district_id || user.subdistrict_id) {

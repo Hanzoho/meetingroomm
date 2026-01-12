@@ -131,7 +131,7 @@ export default function OfficerApprovalsPage() {
         return
       }
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/protected/officer/reservations?status=all`, {
+      const response = await fetch(`/api/protected/officer/reservations?status=all`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -375,7 +375,7 @@ export default function OfficerApprovalsPage() {
       }
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/protected/officer/reservations/${confirmAction.reservation.reservation_id}/${endpoint}`,
+        `/api/protected/officer/reservations/${confirmAction.reservation.reservation_id}/${endpoint}`,
         {
           method: 'PUT',
           headers: {

@@ -362,7 +362,7 @@ export default function RoomDirectoryPage() {
   const handleSubmitReport = async (room, reportText) => {
     try {
       const token = localStorage.getItem('token')
-      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/reservations/report-problem`
+      const apiUrl = `/api/reservations/report-problem`
       
       console.log('🔍 Submitting report to:', apiUrl)
       console.log('🔍 Request data:', {
@@ -1028,7 +1028,7 @@ export default function RoomDirectoryPage() {
       if (filters.department) params.append('department', filters.department)
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/rooms?${params.toString()}`,
+        `/api/rooms?${params.toString()}`,
         {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -1059,7 +1059,7 @@ export default function RoomDirectoryPage() {
     try {
       const token = authUtils.getToken()
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/departments`,
+        `/api/departments`,
         {
           headers: {
             'Authorization': `Bearer ${token}`,

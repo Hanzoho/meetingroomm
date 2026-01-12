@@ -113,7 +113,7 @@ export default function RoomDetailModal({
                 <div className="w-full bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl overflow-hidden mb-4">
                   <img
                     key={`modal-img-${selectedRoom.room_id}-${selectedRoom.imageTimestamp || (selectedRoom.updated_at ? new Date(selectedRoom.updated_at).getTime() : Date.now())}`}
-                    src={`${process.env.NEXT_PUBLIC_API_URL}/api/rooms/image/${selectedRoom.room_id}?t=${selectedRoom.imageTimestamp || (selectedRoom.updated_at ? new Date(selectedRoom.updated_at).getTime() : Date.now())}`}
+                    src={`/api/rooms/image/${selectedRoom.room_id}?t=${selectedRoom.imageTimestamp || (selectedRoom.updated_at ? new Date(selectedRoom.updated_at).getTime() : Date.now())}`}
                     alt={selectedRoom.room_name}
                     className="w-full h-80 object-cover rounded-xl shadow-lg"
                     onError={(e) => {

@@ -103,7 +103,7 @@ export default function EditUserModal({ isOpen, onClose, onSuccess, userData }) 
                 const userId = userData.user_id || userData.officer_id || userData.admin_id || userData.executive_id
                 const role = userData.role
 
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/protected/admin/users/${userId}/${role}`, {
+                const response = await fetch(`/api/protected/admin/users/${userId}/${role}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -304,7 +304,7 @@ export default function EditUserModal({ isOpen, onClose, onSuccess, userData }) 
             const currentUserId = userData.user_id || userData.officer_id || userData.executive_id || userData.admin_id
 
             // เช็คอีเมลซ้ำ
-            const emailCheckResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/protected/admin/check-email`, {
+            const emailCheckResponse = await fetch(`/api/protected/admin/check-email`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -382,7 +382,7 @@ export default function EditUserModal({ isOpen, onClose, onSuccess, userData }) 
             const token = authUtils.getToken()
             const userId = userData.user_id || userData.officer_id || userData.executive_id || userData.admin_id
 
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/protected/admin/users/${userId}`, {
+            const response = await fetch(`/api/protected/admin/users/${userId}`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,

@@ -1,15 +1,26 @@
-// API Configuration
-const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/api`
-const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_API_URL
+// ===================================================================
+// API Configuration - ใช้ Next.js API Proxy Layer
+// ===================================================================
+// เปลี่ยนจาก: เรียก backend โดยตรง
+// เป็น: เรียกผ่าน Next.js API Proxy (/api/...)
+// ===================================================================
+
+// API Base URL - เรียกผ่าน Next.js API Proxy (ซ่อน backend URL)
+const API_BASE_URL = '/api'
+
+// สำหรับ static files (รูปภาพ) - ยังต้องเรียก backend โดยตรง
+const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3580'
 
 // Import debug utility
 import { debugLog, prodLog } from '@/utils/debug'
 
-// Helper function สำหรับ static files
+// Helper function สำหรับ static files (รูปภาพ, ไฟล์)
 export const getStaticFileUrl = (path) => {
   if (!path || typeof path !== 'string') return null
   if (path.startsWith('http')) return path
-  return `${BACKEND_BASE_URL}${path}`
+  
+  // Return path as-is (ไม่เพิ่ม prefix เพราะ path มาจาก backend แล้ว)
+  return path
 }
 
 // Create API client with error handling and JWT support

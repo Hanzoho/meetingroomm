@@ -62,7 +62,7 @@ export default function OfficerDashboard() {
       
       // เรียก API เพื่อดึงข้อมูลสถิติจริง
       const token = authUtils.getToken()
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/protected/officer/stats`, {
+      const response = await fetch(`/api/protected/officer/stats`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,

@@ -90,7 +90,7 @@ export default function ExecutiveDashboard() {
     try {
       const token = authUtils.getToken()
       const queryString = new URLSearchParams(params).toString()
-      const url = `${process.env.NEXT_PUBLIC_API_URL}${endpoint}${queryString ? `?${queryString}` : ''}`
+      const url = `${endpoint}${queryString ? `?${queryString}` : ''}`
       
       const response = await fetch(url, {
         method: 'GET',
@@ -115,7 +115,7 @@ export default function ExecutiveDashboard() {
   const exportReport = async (format, reportType) => {
     try {
       const token = authUtils.getToken()
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${API_ENDPOINTS.exportReport}`, {
+      const response = await fetch(`${API_ENDPOINTS.exportReport}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -323,7 +323,7 @@ export default function ExecutiveDashboard() {
         console.log('🔌 เชื่อมต่อ Executive Dashboard API...')
         
         const token = authUtils.getToken()
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/protected/executive/dashboard`, {
+        const response = await fetch(`/api/protected/executive/dashboard`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -362,7 +362,7 @@ export default function ExecutiveDashboard() {
 
           // 🏢 เรียก API สำหรับข้อมูลห้องประชุม
           try {
-            const roomsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/protected/executive/rooms`, {
+            const roomsResponse = await fetch(`/api/protected/executive/rooms`, {
               method: 'GET',
               headers: {
                 'Authorization': `Bearer ${token}`,
@@ -380,7 +380,7 @@ export default function ExecutiveDashboard() {
                 // 📊 ดึงข้อมูลสถิติครั้งเดียวสำหรับทุกห้อง
                 let roomUtilizationStats = {}
                 try {
-                  const reportsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/protected/executive/reports`, {
+                  const reportsResponse = await fetch(`/api/protected/executive/reports`, {
                     method: 'GET',
                     headers: {
                       'Authorization': `Bearer ${token}`,
@@ -464,7 +464,7 @@ export default function ExecutiveDashboard() {
         console.log('📊 เชื่อมต่อ Executive Reports API...')
         
         const token = authUtils.getToken()
-        const reportsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/protected/executive/reports`, {
+        const reportsResponse = await fetch(`/api/protected/executive/reports`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
