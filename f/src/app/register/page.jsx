@@ -436,7 +436,7 @@ const RegisterPage = () => {
       // เรียก API /auth/register
       const result = await authAPI.register(registerData)
 
-      // console.log('Registration result:', result) // Debug log
+      console.log('🔍 Registration result:', result) // Debug log
 
       if (result.success) {
         // แสดง success alert แบบ AlertDialog
@@ -472,8 +472,9 @@ const RegisterPage = () => {
         })
       }
     } catch (error) {
-      // ปิด console.error ที่ไม่จำเป็น - แสดงแค่ UI Alert
-      // console.error('Registration error:', error)
+      // Debug error
+      console.error('🔴 Registration error:', error)
+      console.error('🔴 Error message:', error?.message)
 
       // จัดการ error message ที่ได้จาก API
       let errorMessage = 'ไม่สามารถสมัครสมาชิกได้ โปรดลองใหม่อีกครั้ง'

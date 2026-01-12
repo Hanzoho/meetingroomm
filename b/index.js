@@ -54,8 +54,6 @@ app.use(cors({
 
 // Global Error Handler (จัดการ error ครั้งเดียว)
 app.onError(({ code, error, set }) => {
-  console.error('API Error:', error)
-
   if (code === 'NOT_FOUND') {
     set.status = 404
     return { error: 'ไม่พบ endpoint ที่ต้องการ' }
@@ -121,7 +119,6 @@ app.group('/api', app => app
         }
       }
     } catch (error) {
-      console.error('Database test error:', error)
       return {
         success: false,
         message: 'Database ไม่ทำงาน',

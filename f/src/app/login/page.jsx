@@ -76,6 +76,19 @@ function Page() {
         // ลบ testExpiry ออก - ใช้ 1 ชั่วโมงปกติ
       })
 
+      console.log('🔍 Login Response:', response) // Debug
+
+      // ⚠️ เช็คว่า login สำเร็จก่อน
+      if (!response.success) {
+        // แสดงใน Alert Dialog
+        setAlertErrors([response.message || '❌ อีเมลหรือรหัสผ่านไม่ถูกต้อง'])
+        setAlertTitle(response.message?.includes('มากเกินไป') ? '🚫 คำขอมากเกินไป' : '❌ เข้าสู่ระบบไม่สำเร็จ')
+        setShowAlert(true)
+        
+        setLoading(false)
+        return
+      }
+
       // เก็บ token และข้อมูลผู้ใช้
       authUtils.setAuth(response.token, response.user)
       
@@ -113,15 +126,9 @@ function Page() {
       }, 2000) // เพิ่มเวลาให้แสดงหน้าโหลด
 
     } catch (error) {
-      // ลด log ซ้ำซ้อน - log เฉพาะใน development mode และไม่ใช่ credential error หรือ approval error
-      if (process.env.NODE_ENV === 'development' && 
-          !error.message.includes('Unauthorized') && 
-          !error.message.includes('อีเมลหรือรหัสผ่านไม่ถูกต้อง') &&
-          !error.message.includes('บัญชีของคุณรอการอนุมัติ') &&
-          !error.message.includes('รอการอนุมัติ') &&
-          !error.message.includes('pending')) {
-        console.error('Login error:', error)
-      }
+      // Debug: แสดง error ทุกครั้งเพื่อตรวจสอบปัญหา
+      console.error('🔴 Login error:', error)
+      console.error('🔴 Error message:', error?.message)
 
       // จัดการ error message ให้เป็นมิตรกับผู้ใช้
       let errorMessage = 'อีเมลหรือรหัสผ่านไม่ถูกต้อง กรุณาตรวจสอบและลองใหม่อีกครั้ง'

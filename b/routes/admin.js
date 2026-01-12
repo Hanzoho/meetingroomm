@@ -42,8 +42,6 @@ export const adminRoutes = new Elysia({ prefix: '/protected/admin' })
     }
 
     try {
-      console.log('👥 Admin: ดูรายการผู้ใช้ทั้งหมด (เฉพาะที่อนุมัติแล้ว)')
-
       // ดึงข้อมูลจากทุก table พร้อม address fields - เฉพาะ status = 'approved'
       const [users, officers, executives, admins] = await Promise.all([
         prisma.users.findMany({
@@ -161,7 +159,6 @@ export const adminRoutes = new Elysia({ prefix: '/protected/admin' })
       }
 
     } catch (error) {
-      console.error('❌ เกิดข้อผิดพลาดในการดึงรายการผู้ใช้:', error)
       set.status = 500
       return {
         success: false,
@@ -189,7 +186,6 @@ export const adminRoutes = new Elysia({ prefix: '/protected/admin' })
 
     try {
       const { userId, role } = params
-      console.log(`👁️ Admin: ดูข้อมูลผู้ใช้ ID=${userId}, Role=${role}`)
 
       let userData = null
 
@@ -259,7 +255,6 @@ export const adminRoutes = new Elysia({ prefix: '/protected/admin' })
       }
 
     } catch (error) {
-      console.error('❌ เกิดข้อผิดพลาดในการดึงข้อมูลผู้ใช้:', error)
       set.status = 500
       return {
         success: false,
@@ -285,9 +280,6 @@ export const adminRoutes = new Elysia({ prefix: '/protected/admin' })
     }
 
     try {
-      console.log(`➕ Admin: เพิ่มผู้ใช้ใหม่ ${body.first_name} ${body.last_name} (${body.role})`)
-      console.log(`📍 ข้อมูลที่อยู่: จังหวัด=${body.province_id}, อำเภอ=${body.district_id}, ตำบล=${body.subdistrict_id}, รหัสไปรษณีย์=${body.zip_code}`)
-
       // ตรวจสอบข้อมูลพื้นฐานก่อนแฮชรหัสผ่าน
       if (!body.email || !body.password || !body.first_name || !body.last_name || !body.role) {
         set.status = 400
@@ -450,7 +442,6 @@ export const adminRoutes = new Elysia({ prefix: '/protected/admin' })
       }
 
     } catch (error) {
-      console.error('❌ เกิดข้อผิดพลาดในการเพิ่มผู้ใช้:', error)
       set.status = 500
       return {
         success: false,
@@ -479,8 +470,6 @@ export const adminRoutes = new Elysia({ prefix: '/protected/admin' })
     try {
       const { userId } = params
       const { first_name, last_name, email, department, originalRole, zip_code, province_id, district_id, subdistrict_id } = body
-
-      console.log(`✏️ Admin: แก้ไขข้อมูลผู้ใช้ ID=${userId}, Role=${originalRole}`)
 
       // ตรวจสอบอีเมลซ้ำ (ยกเว้นตัวเอง)
       const existingEmail = await Promise.all([
@@ -598,7 +587,6 @@ export const adminRoutes = new Elysia({ prefix: '/protected/admin' })
       }
 
     } catch (error) {
-      console.error('❌ เกิดข้อผิดพลาดในการแก้ไขผู้ใช้:', error)
       set.status = 500
       return {
         success: false,
@@ -629,15 +617,12 @@ export const adminRoutes = new Elysia({ prefix: '/protected/admin' })
       const { role } = query
 
       if (!role) {
-        console.log('❌ ไม่ได้รับ role จาก query parameter')
         set.status = 400
         return {
           success: false,
           message: 'ไม่ได้รับข้อมูล role'
         }
       }
-
-      console.log(`🗑️ Admin: ลบผู้ใช้ ID=${userId}, Role=${role}`)
 
       let deleteResult
 
@@ -648,13 +633,11 @@ export const adminRoutes = new Elysia({ prefix: '/protected/admin' })
           const deletedUserReservations = await prisma.reservation.deleteMany({
             where: { user_id: parseInt(userId) }
           })
-          console.log(`🗑️ ลบ ${deletedUserReservations.count} reservations ที่เชื่อมโยงกับ user ID=${userId}`)
 
           // ลบ reviews ที่เชื่อมโยงก่อน (Cascade Delete)
           const deletedUserReviews = await prisma.review.deleteMany({
             where: { user_id: parseInt(userId) }
           })
-          console.log(`🗑️ ลบ ${deletedUserReviews.count} reviews ที่เชื่อมโยงกับ user ID=${userId}`)
 
           deleteResult = await prisma.users.delete({
             where: { user_id: parseInt(userId) }
@@ -665,7 +648,6 @@ export const adminRoutes = new Elysia({ prefix: '/protected/admin' })
           const deletedReservations = await prisma.reservation.deleteMany({
             where: { officer_id: parseInt(userId) }
           })
-          console.log(`🗑️ ลบ ${deletedReservations.count} reservations ที่เชื่อมโยงกับ officer ID=${userId}`)
 
           deleteResult = await prisma.officer.delete({
             where: { officer_id: parseInt(userId) }
@@ -704,7 +686,6 @@ export const adminRoutes = new Elysia({ prefix: '/protected/admin' })
       }
 
     } catch (error) {
-      console.error('❌ เกิดข้อผิดพลาดในการลบผู้ใช้:', error)
       set.status = 500
       return {
         success: false,
@@ -734,8 +715,6 @@ export const adminRoutes = new Elysia({ prefix: '/protected/admin' })
     }
 
     try {
-      console.log('📊 Admin: ดูสถิติผู้ใช้งาน (ทุก 4 tables)')
-
       // นับจำนวนใน users table
       const userCount = await prisma.users.count()
 
@@ -761,7 +740,6 @@ export const adminRoutes = new Elysia({ prefix: '/protected/admin' })
       }
 
     } catch (error) {
-      console.error('❌ เกิดข้อผิดพลาด:', error)
       set.status = 500
       return {
         success: false,
@@ -786,8 +764,6 @@ export const adminRoutes = new Elysia({ prefix: '/protected/admin' })
     }
 
     try {
-      console.log('📊 Admin: ดูสถิติการเข้าใช้ระบบตามคณะ')
-
       // นับจำนวนผู้ใช้จาก users table ตาม department
       const usersByDept = await prisma.users.groupBy({
         by: ['department'],
@@ -864,7 +840,6 @@ export const adminRoutes = new Elysia({ prefix: '/protected/admin' })
       }
 
     } catch (error) {
-      console.error('❌ เกิดข้อผิดพลาดในการดึงสถิติคณะ:', error)
       set.status = 500
       return {
         success: false,
@@ -891,8 +866,6 @@ export const adminRoutes = new Elysia({ prefix: '/protected/admin' })
     }
 
     try {
-      console.log('👁️ Admin: ดูข้อมูล Executive ทั้งหมด')
-
       let executives = await prisma.executive.findMany({
         select: {
           executive_id: true,
@@ -920,7 +893,6 @@ export const adminRoutes = new Elysia({ prefix: '/protected/admin' })
       }
 
     } catch (error) {
-      console.error('❌ เกิดข้อผิดพลาด:', error)
       set.status = 500
       return {
         success: false,
@@ -946,8 +918,6 @@ export const adminRoutes = new Elysia({ prefix: '/protected/admin' })
     }
 
     try {
-      console.log('👁️ Admin: ดูข้อมูลผู้ใช้ทั้งหมดจาก 4 tables')
-
       const [users, officers, admins, executives] = await Promise.all([
         prisma.users.findMany({
           where: { status: 'approved' }, // เฉพาะคนที่ approved เท่านั้น
@@ -1034,7 +1004,6 @@ export const adminRoutes = new Elysia({ prefix: '/protected/admin' })
       }
 
     } catch (error) {
-      console.error('❌ เกิดข้อผิดพลาด:', error)
       set.status = 500
       return {
         success: false,
@@ -1060,8 +1029,6 @@ export const adminRoutes = new Elysia({ prefix: '/protected/admin' })
     }
 
     try {
-      console.log('👆 Admin: เปลี่ยน User → Officer')
-
       if (!body.email) {
         set.status = 400
         return {
@@ -1120,7 +1087,6 @@ export const adminRoutes = new Elysia({ prefix: '/protected/admin' })
       return { success: true, message: `เปลี่ยน ${body.email} เป็น Officer สำเร็จ` }
 
     } catch (error) {
-      console.error('❌ เกิดข้อผิดพลาด:', error)
       set.status = 500
       return {
         success: false,
@@ -1142,7 +1108,6 @@ export const adminRoutes = new Elysia({ prefix: '/protected/admin' })
     }
 
     try {
-      console.log('👆 Admin: เปลี่ยน Officer → Admin')
       if (!body?.email) {
         set.status = 400
         return { success: false, message: 'กรุณาระบุอีเมล' }
@@ -1181,7 +1146,6 @@ export const adminRoutes = new Elysia({ prefix: '/protected/admin' })
 
       return { success: true, message: `เปลี่ยน ${body.email} เป็น Admin สำเร็จ` }
     } catch (error) {
-      console.error('❌ เกิดข้อผิดพลาด:', error)
       set.status = 500
       return { success: false, message: 'เกิดข้อผิดพลาดในการเปลี่ยน role' }
     }
@@ -1205,8 +1169,6 @@ export const adminRoutes = new Elysia({ prefix: '/protected/admin' })
 
     try {
       const { email, userId, role } = body
-
-      console.log(`📧 Admin: เช็คอีเมลซ้ำ - ${email} (ยกเว้น ${role} ID: ${userId})`)
 
       // เช็คอีเมลซ้ำในทุก table ยกเว้นผู้ใช้ปัจจุบัน
       const [existingUsers, existingOfficers, existingExecutives, existingAdmins] = await Promise.all([
@@ -1245,7 +1207,6 @@ export const adminRoutes = new Elysia({ prefix: '/protected/admin' })
       }
 
     } catch (error) {
-      console.error('❌ เกิดข้อผิดพลาดในการตรวจสอบอีเมล:', error)
       set.status = 500
       return {
         success: false,
@@ -1270,8 +1231,6 @@ export const adminRoutes = new Elysia({ prefix: '/protected/admin' })
     }
 
     try {
-      console.log('👥 Admin: ดูรายการผู้ใช้รออนุมัติ')
-
       const [users, officers, executives, admins] = await Promise.all([
         prisma.users.findMany({
           where: { status: 'pending' },
@@ -1349,7 +1308,6 @@ export const adminRoutes = new Elysia({ prefix: '/protected/admin' })
       }
 
     } catch (error) {
-      console.error('❌ เกิดข้อผิดพลาดในการดึงรายการผู้ใช้รออนุมัติ:', error)
       set.status = 500
       return {
         success: false,
@@ -1424,16 +1382,11 @@ export const adminRoutes = new Elysia({ prefix: '/protected/admin' })
           }
       }
 
-      console.log(`✅ Admin: อนุมัติผู้ใช้ ${role} ID: ${userId}`)
-
       // ส่งอีเมลแจ้งเตือนผู้ใช้ว่าได้รับการอนุมัติ (แบบ non-blocking)
       const approvedEmail = getAccountApprovedEmail(updatedUser.first_name, updatedUser.last_name)
       const emailResult = await sendEmail(userEmail, approvedEmail.subject, approvedEmail.html)
 
-      if (emailResult.success) {
-        console.log('✅ ส่งอีเมลแจ้งเตือนการอนุมัติเรียบร้อย')
-      } else {
-        console.error('❌ ส่งอีเมลแจ้งเตือนการอนุมัติไม่สำเร็จ:', emailResult.error)
+      if (!emailResult.success) {
         // ไม่ block การอนุมัติ แม้อีเมลส่งไม่ได้
       }
 
@@ -1444,7 +1397,6 @@ export const adminRoutes = new Elysia({ prefix: '/protected/admin' })
       }
 
     } catch (error) {
-      console.error('❌ เกิดข้อผิดพลาดในการอนุมัติผู้ใช้:', error)
       set.status = 500
       return {
         success: false,
@@ -1532,16 +1484,11 @@ export const adminRoutes = new Elysia({ prefix: '/protected/admin' })
           }
       }
 
-      console.log(`❌ Admin: ปฏิเสธและลบผู้ใช้ ${role} ID: ${userId}`)
-
       // ส่งอีเมลแจ้งเตือนผู้ใช้ว่าถูกปฏิเสธ (ก่อนลบข้อมูล, แบบ non-blocking)
       const rejectedEmail = getAccountRejectedEmail(updatedUser.first_name, updatedUser.last_name)
       const emailResult = await sendEmail(userEmail, rejectedEmail.subject, rejectedEmail.html)
 
-      if (emailResult.success) {
-        console.log('✅ ส่งอีเมลแจ้งเตือนการปฏิเสธเรียบร้อย')
-      } else {
-        console.error('❌ ส่งอีเมลแจ้งเตือนการปฏิเสธไม่สำเร็จ:', emailResult.error)
+      if (!emailResult.success) {
         // ไม่ block การปฏิเสธ แม้อีเมลส่งไม่ได้
       }
 
@@ -1552,7 +1499,6 @@ export const adminRoutes = new Elysia({ prefix: '/protected/admin' })
       }
 
     } catch (error) {
-      console.error('❌ เกิดข้อผิดพลาดในการปฏิเสธผู้ใช้:', error)
       set.status = 500
       return {
         success: false,

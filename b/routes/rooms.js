@@ -39,7 +39,6 @@ export const roomRoutes = new Elysia({ prefix: '/rooms' })
       return room.image
       
     } catch (error) {
-      console.error('❌ Error serving image:', error)
       set.status = 500
       return { success: false, message: 'Error serving image' }
     }
@@ -81,15 +80,9 @@ export const roomRoutes = new Elysia({ prefix: '/rooms' })
       if (authenticatedUser && authenticatedUser.role === 'officer') {
         if (authenticatedUser.department) {
           where.department = authenticatedUser.department // บังคับให้เห็นเฉพาะห้องที่มีสิทธิ์ตาม department
-          console.log('🔐 [SECURITY] Officer room filtering by department:', {
-            officer_id: authenticatedUser.officer_id,
-            department: authenticatedUser.department,
-            filtered_by: authenticatedUser.department
-          })
         } else {
           // หาก Officer ไม่มี department ให้ return empty result
           where.room_id = -1 // Impossible room_id to return no results
-          console.log('⚠️ [SECURITY] Officer without department blocked from viewing rooms:', authenticatedUser.email)
         }
       } else if (department) {
         // สำหรับ role อื่นๆ หรือ public request ให้ filter ตาม parameter ปกติ
@@ -159,7 +152,6 @@ export const roomRoutes = new Elysia({ prefix: '/rooms' })
       }
 
     } catch (error) {
-      console.error('❌ Error fetching rooms:', error)
       set.status = 500
       return {
         success: false,
@@ -255,7 +247,6 @@ export const roomRoutes = new Elysia({ prefix: '/rooms' })
       }
 
     } catch (error) {
-      console.error('❌ Error fetching room details:', error)
       set.status = 500
       return {
         success: false,
@@ -299,7 +290,6 @@ export const officerRoomRoutes = new Elysia({ prefix: '/protected/officer' })
                 ? JSON.parse(body.equipment) 
                 : body.equipment
             } catch (e) {
-              console.log('Equipment parsing error:', e)
               equipment = []
             }
           }
@@ -311,10 +301,7 @@ export const officerRoomRoutes = new Elysia({ prefix: '/protected/officer' })
               // แปลงไฟล์เป็น Buffer เพื่อเก็บใน database
               const arrayBuffer = await body.image.arrayBuffer()
               imageBuffer = Buffer.from(arrayBuffer)
-              
-              console.log('📷 Image converted to buffer, size:', imageBuffer.length, 'bytes')
             } catch (error) {
-              console.error('❌ Error converting image to buffer:', error)
               imageBuffer = null
             }
           }
@@ -336,12 +323,6 @@ export const officerRoomRoutes = new Elysia({ prefix: '/protected/officer' })
             }
           }
 
-          console.log('🔐 [SECURITY] Officer room creation by department:', {
-            officer_id: user.officer_id,
-            department: user.department,
-            creating_for_department: user.department
-          })
-          
           // สร้างห้องประชุมใหม่ (department ตาม department ของผู้ใช้)
           const newRoom = await prisma.meeting_room.create({
             data: {
@@ -438,23 +419,12 @@ export const officerRoomRoutes = new Elysia({ prefix: '/protected/officer' })
               equipment = typeof body.equipment === 'string' 
                 ? JSON.parse(body.equipment) 
                 : body.equipment
-              console.log('🛠️ Equipment data received for update:', equipment)
             } catch (e) {
-              console.log('Equipment parsing error:', e)
               equipment = []
             }
           }
 
           // ⚡ ไม่จัดการรูปภาพใน PUT API แล้ว (ใช้ PUT /:id/image แทน)
-
-          console.log('🔄 Updating room with data:', {
-            room_name,
-            capacity: capacity ? parseInt(capacity) : undefined,
-            location_m,
-            status_m,
-            details_m,
-            note: 'Image handled separately via PUT /:id/image'
-          })
 
           // อัปเดตข้อมูลห้อง (ไม่อนุญาตให้เปลี่ยน department)
           const updatedRoom = await prisma.meeting_room.update({
@@ -483,9 +453,6 @@ export const officerRoomRoutes = new Elysia({ prefix: '/protected/officer' })
                 quantity: parseInt(item.quantity)
               }))
             })
-            console.log('🛠️ Equipment updated:', equipment.length, 'items')
-          } else {
-            console.log('🛠️ No equipment to update')
           }
 
           return {
@@ -551,12 +518,8 @@ export const officerRoomRoutes = new Elysia({ prefix: '/protected/officer' })
           }
 
           // จัดการรูปภาพจาก FormData
-          console.log('📋 Request body keys:', Object.keys(body))
-          console.log('📋 Body image:', body.image)
-          
           const image = body.image
           if (!image) {
-            console.log('❌ No image found in body')
             set.status = 400
             return {
               success: false,
@@ -565,7 +528,6 @@ export const officerRoomRoutes = new Elysia({ prefix: '/protected/officer' })
           }
 
           if (!image.name) {
-            console.log('❌ Image has no name property')
             set.status = 400
             return {
               success: false,
@@ -573,31 +535,19 @@ export const officerRoomRoutes = new Elysia({ prefix: '/protected/officer' })
             }
           }
 
-          console.log('📷 Image file details:', {
-            name: image.name,
-            size: image.size,
-            type: image.type
-          })
-
-          console.log('📷 Processing image upload for room:', roomId)
-
           // แปลงไฟล์เป็น Buffer เพื่อเก็บใน database
           let arrayBuffer, imageBuffer
           try {
-            console.log('🔄 Converting image to buffer...')
             arrayBuffer = await image.arrayBuffer()
             imageBuffer = Buffer.from(arrayBuffer)
-            console.log('✅ Image buffer created, size:', imageBuffer.length, 'bytes')
           } catch (bufferError) {
-            console.error('❌ Error converting image to buffer:', bufferError)
+            console.error('Error converting image to buffer in /rooms/:id/image:', bufferError)
             set.status = 500
             return {
               success: false,
               message: 'เกิดข้อผิดพลาดในการประมวลผลรูปภาพ'
             }
           }
-
-          console.log('💾 Saving image to database, size:', imageBuffer.length, 'bytes')
 
           // อัพเดทเฉพาะรูปภาพ
           let updatedRoom
@@ -614,19 +564,14 @@ export const officerRoomRoutes = new Elysia({ prefix: '/protected/officer' })
                 updated_at: true
               }
             })
-            console.log('✅ Database update successful')
           } catch (dbError) {
-            console.error('❌ Database error:', dbError)
+            console.error('Database error saving room image in /rooms/:id/image:', dbError)
             set.status = 500
             return {
               success: false,
               message: 'เกิดข้อผิดพลาดในการบันทึกรูปภาพ'
             }
           }
-
-          console.log('✅ Image updated successfully for room:', roomId)
-          console.log('📊 Updated room image size:', updatedRoom.image ? updatedRoom.image.length : 0, 'bytes')
-          console.log('🕒 Updated at:', updatedRoom.updated_at)
 
           return {
             success: true,
@@ -659,8 +604,6 @@ export const officerRoomRoutes = new Elysia({ prefix: '/protected/officer' })
             }
           }
 
-          console.log('🗑️ Deleting image for room:', roomId)
-
           // ตรวจสอบว่าห้องประชุมมีอยู่และอยู่ใน department เดียวกัน
           const room = await prisma.meeting_room.findFirst({
             where: {
@@ -685,8 +628,6 @@ export const officerRoomRoutes = new Elysia({ prefix: '/protected/officer' })
               updated_at: new Date()
             }
           })
-
-          console.log('✅ Image deleted successfully for room:', roomId)
 
           return {
             success: true,
@@ -751,34 +692,28 @@ export const officerRoomRoutes = new Elysia({ prefix: '/protected/officer' })
           }
 
           // 🗑️ เริ่มลบห้องประชุมโดยไม่เช็คการจอง (ตามความต้องการของอาจารย์)
-          console.log(`🗑️ Attempting to delete room ${roomId} - skipping reservation check as requested`)
 
           // ลบข้อมูลที่เกี่ยวข้องก่อน (ตาม Foreign Key Dependencies)
-          console.log(`🗑️ Starting cascade delete for room ${roomId}`)
           
           // 1. ลบ review ก่อน
           const reviewCount = await prisma.review.deleteMany({
             where: { room_id: roomId }
           })
-          console.log(`🗑️ Deleted ${reviewCount.count} reviews`)
 
           // 2. ลบ equipment ก่อน
           const equipmentCount = await prisma.equipment.deleteMany({
             where: { room_id: roomId }
           })
-          console.log(`🗑️ Deleted ${equipmentCount.count} equipment records`)
 
           // 3. ลบ reservations ทั้งหมดของห้องนี้
           const reservationCount = await prisma.reservation.deleteMany({
             where: { room_id: roomId }
           })
-          console.log(`🗑️ Deleted ${reservationCount.count} reservations`)
 
           // 4. สุดท้ายลบห้องประชุม
           await prisma.meeting_room.delete({
             where: { room_id: roomId }
           })
-          console.log(`🗑️ Successfully deleted meeting room ${roomId}`)
 
           return {
             success: true,
@@ -889,13 +824,6 @@ export const officerRoomRoutes = new Elysia({ prefix: '/protected/officer' })
               const today = bangkokTime.toISOString().split('T')[0] // YYYY-MM-DD
               const currentTime = bangkokTime.toISOString().split('T')[1].substring(0, 5) // HH:MM
               
-              console.log(`🕐 Checking current usage for room ${room.room_id}:`, {
-                today,
-                currentTime,
-                currentDateTime: now.toISOString(),
-                bangkokDateTime: bangkokTime.toISOString()
-              })
-              
               // หา reservation ที่กำลัง active อยู่ในขณะนี้ - รองรับ multi-day booking
               const allReservations = await prisma.reservation.findMany({
                 where: {
@@ -946,15 +874,6 @@ export const officerRoomRoutes = new Elysia({ prefix: '/protected/officer' })
               
               // ใช้จำนวนการจองทั้งหมดที่ยังมีผล (ไม่ใช่แค่ปัจจุบัน)
               const currentUsers = activeReservations.length
-              
-              console.log(`👥 Room ${room.room_id} active reservations:`, {
-                activeNow: currentUsers,
-                activeDetails: activeReservations.map(r => ({
-                  id: r.reservation_id,
-                  start_datetime: r.start_time.toISOString(),
-                  end_datetime: r.end_time.toISOString()
-                }))
-              })
               
               return {
                 ...room,

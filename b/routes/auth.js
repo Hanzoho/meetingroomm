@@ -31,15 +31,10 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
   // API สมัครสมาชิก (Position-based)
   .post('/register', async ({ body, set }) => {
     try {
-      console.log('📝 เรียกใช้ API สมัครสมาชิก')
-      console.log('📋 ข้อมูลที่ได้รับ:', body)
-
       // ตรวจสอบข้อมูลด้วย validation
-      console.log('🔍 กำลังตรวจสอบข้อมูล...')
       const validation = validateRegisterData(body)
 
       if (!validation.isValid) {
-        console.log('❌ ตรวจสอบข้อมูลไม่ผ่าน:', validation.errors)
         set.status = 400
         return {
           success: false,
@@ -47,11 +42,8 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
         }
       }
 
-      console.log('✅ ตรวจสอบข้อมูลผ่าน')
-
       // ตรวจสอบ position ที่เลือก
       if (!body.position) {
-        console.log('❌ ไม่ได้ระบุตำแหน่ง')
         set.status = 400
         return {
           success: false,
@@ -60,7 +52,6 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
       }
 
       if (!isValidPosition(body.position)) {
-        console.log('❌ ตำแหน่งไม่ถูกต้อง:', body.position)
         set.status = 400
         return {
           success: false,
@@ -73,14 +64,6 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
       const roleId = getRoleIdFromPosition(body.position)
       const departmentFromPosition = getDepartmentFromPosition(body.position)
       const executiveType = getExecutivePositionType(body.position)
-
-      console.log('📋 Position Analysis:', {
-        position: body.position,
-        targetTable,
-        roleId,
-        departmentFromPosition,
-        executiveType
-      })
 
       // ตรวจสอบ email ซ้ำในทุก table (users, officer, admin, executive)
       const existingInUsers = await prisma.users.findUnique({
@@ -100,7 +83,6 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
       })
 
       if (existingInUsers || existingInOfficer || existingInAdmin || existingInExecutive) {
-        console.log('❌ อีเมลนี้ถูกใช้งานแล้ว')
         set.status = 409
         return {
           success: false,
@@ -127,7 +109,6 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
         })
 
         if (existingCitizenInUsers || existingCitizenInOfficer || existingCitizenInAdmin || existingCitizenInExecutive) {
-          console.log('❌ เลขบัตรประชาชนนี้ถูกใช้งานแล้ว')
           set.status = 409
           return {
             success: false,
@@ -139,7 +120,6 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
       // เข้ารหัสรหัสผ่าน
       const bcrypt = await import('bcryptjs')
       const hashedPassword = await bcrypt.hash(body.password, 10)
-      console.log('🔐 เข้ารหัสรหัสผ่านเสร็จสิ้น')
 
       // 🎯 Position-based Registration Logic
       let newUser = null
@@ -206,15 +186,11 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
         })
       }
 
-      console.log(`✅ สร้างผู้ใช้ใหม่สำเร็จใน ${targetTable} table`)
-
       // ส่งอีเมลแจ้งเตือนผู้ใช้ว่าต้องรอการอนุมัติ
       try {
         const successEmail = getSuccessfulRegistrationEmail(body.first_name, body.last_name)
         await sendEmail(body.email, successEmail.subject, successEmail.html)
-        console.log('✅ ส่งอีเมลแจ้งเตือนผู้ใช้เรียบร้อย')
       } catch (emailError) {
-        console.error('❌ ส่งอีเมลแจ้งเตือนผู้ใช้ไม่สำเร็จ:', emailError)
         // ไม่ให้ error นี้หยุดการสมัครสมาชิก
       }
 
@@ -239,10 +215,8 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
           for (const admin of admins) {
             await sendEmail(admin.email, adminEmail.subject, adminEmail.html)
           }
-          console.log('✅ ส่งอีเมลแจ้งเตือน Admin เรียบร้อย')
         }
       } catch (emailError) {
-        console.error('❌ ส่งอีเมลแจ้งเตือน Admin ไม่สำเร็จ:', emailError)
         // ไม่ให้ error นี้หยุดการสมัครสมาชิก
       }
 
@@ -260,13 +234,7 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
       }
 
     } catch (err) {
-      console.error('❌ เกิดข้อผิดพลาดในการสมัครสมาชิก:', err)
-      console.error('รายละเอียดข้อผิดพลาด:', {
-        message: err.message,
-        code: err.code,
-        meta: err.meta
-      })
-
+      console.error('Error in /auth/register:', err)
       // จัดการ error เฉพาะ
       if (err.code === 'P2002' && err.meta?.target?.includes('citizen_id')) {
         set.status = 409
@@ -295,14 +263,10 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
   // 🎯 API สมัครสมาชิก Admin โดยตรง (สำหรับสร้าง Admin คนแรก)
   .post('/register-admin', async ({ body, set }) => {
     try {
-      console.log('🔐 เรียกใช้ API สมัครสมาชิก Admin โดยตรง')
-      console.log('📋 ข้อมูลที่ได้รับ:', body)
-
       // ตรวจสอบข้อมูลด้วย validation
       const validation = validateRegisterData(body)
 
       if (!validation.isValid) {
-        console.log('❌ ตรวจสอบข้อมูลไม่ผ่าน:', validation.errors)
         set.status = 400
         return {
           success: false,
@@ -328,7 +292,6 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
       })
 
       if (existingInUsers || existingInOfficer || existingInAdmin || existingInExecutive) {
-        console.log('❌ อีเมลนี้ถูกใช้งานแล้ว')
         set.status = 409
         return {
           success: false,
@@ -355,7 +318,6 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
         })
 
         if (existingCitizenInUsers || existingCitizenInOfficer || existingCitizenInAdmin || existingCitizenInExecutive) {
-          console.log('❌ เลขบัตรประชาชนนี้ถูกใช้งานแล้ว')
           set.status = 409
           return {
             success: false,
@@ -386,8 +348,6 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
         }
       })
 
-      console.log('✅ สร้าง Admin ใหม่สำเร็จ')
-
       // ลบ password ออกจาก response
       const { password, ...adminWithoutPassword } = newAdmin
 
@@ -402,8 +362,7 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
       }
 
     } catch (err) {
-      console.error('❌ เกิดข้อผิดพลาดในการสมัครสมาชิก Admin:', err)
-
+      console.error('Error in /auth/register-admin:', err)
       // จัดการ error เฉพาะ
       if (err.code === 'P2002' && err.meta?.target?.includes('citizen_id')) {
         set.status = 409
@@ -432,8 +391,6 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
   // API เข้าสู่ระบบ (4-table login)
   .post('/login', async ({ body, set }) => {
     try {
-      console.log('🔐 เรียกใช้ API เข้าสู่ระบบ')
-
       // ตรวจสอบข้อมูล
       if (!body.email || !body.password) {
         set.status = 400
@@ -442,8 +399,6 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
           message: 'กรุณากรอก email และ password'
         }
       }
-
-      console.log('🔍 กำลังหาผู้ใช้ในฐานข้อมูล...')
 
       // หาผู้ใช้ในฐานข้อมูลจาก 4 tables
       let user = null
@@ -519,7 +474,6 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
       }
 
       if (!user) {
-        console.log('❌ ไม่พบผู้ใช้')
         set.status = 401
         return {
           success: false,
@@ -527,14 +481,12 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
         }
       }
 
-      console.log('✅ พบผู้ใช้ในฐานข้อมูล')
 
       // ตรวจสอบรหัสผ่าน
       const bcrypt = await import('bcryptjs')
       const isValidPassword = await bcrypt.compare(body.password, user.password)
 
       if (!isValidPassword) {
-        console.log('❌ รหัสผ่านไม่ถูกต้อง')
         set.status = 401
         return {
           success: false,
@@ -542,11 +494,9 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
         }
       }
 
-      console.log('✅ รหัสผ่านถูกต้อง')
 
       // ตรวจสอบสถานะการอนุมัติ
       if (user.status !== 'approved') {
-        console.log(`❌ ผู้ใช้ยังไม่ได้รับการอนุมัติ สถานะ: ${user.status}`)
         set.status = 403
         return {
           success: false,
@@ -579,13 +529,6 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
       const expiryTimeReadable = new Date(decoded.exp * 1000)
       const minutesLeft = Math.round((decoded.exp * 1000 - Date.now()) / (1000 * 60))
 
-      console.log(`✅ สร้าง JWT Token สำเร็จ - Role: ${decoded.role}, Expires: ${expiryTimeReadable.toLocaleString('th-TH')}`)
-      console.log(`📅 Token จะหมดอายุใน ${minutesLeft} นาที ${isTestMode ? '(TEST MODE)' : ''}`)
-
-      if (isTestMode) {
-        console.log('🧪 TEST MODE: Token จะหมดอายุใน 30 วินาทีเพื่อทดสอบ')
-      }
-
       // ลบ password ออกจาก response และปรับ user_id ให้ consistent
       const { password, ...userWithoutPassword } = user
 
@@ -613,7 +556,7 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
       }
 
     } catch (err) {
-      console.error('❌ เกิดข้อผิดพลาดในการเข้าสู่ระบบ:', err)
+      console.error('Error in /auth/login:', err)
       set.status = 500
       return {
         success: false,
@@ -623,10 +566,9 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
   })
 
   // API สำหรับตรวจสอบอีเมลและรีเซ็ตรหัสผ่าน
+  // API Forgot Password - มี Rate Limiting
   .post('/forgot-password', async ({ body, set }) => {
     try {
-      console.log('🔐 เรียกใช้ API ตรวจสอบอีเมลสำหรับรีเซ็ตรหัสผ่าน')
-
       if (!body.email) {
         set.status = 400
         return {
@@ -634,8 +576,6 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
           message: 'กรุณากรอกอีเมล'
         }
       }
-
-      console.log('🔍 กำลังตรวจสอบอีเมลในฐานข้อมูล...')
 
       // หาผู้ใช้ในฐานข้อมูลจาก 4 tables
       let user = null
@@ -689,7 +629,6 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
 
       // ตรวจสอบผลลัพธ์และให้ feedback ชัดเจน
       if (!user) {
-        console.log('❌ ไม่พบอีเมลในระบบ')
         set.status = 404
         return {
           success: false,
@@ -699,21 +638,10 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
         }
       }
 
-      console.log('✅ พบอีเมลในระบบ:', {
-        email: body.email,
-        table: userTable,
-        name: `${user.first_name} ${user.last_name}`
-      })
-
       // สร้าง Reset Token (32 bytes = 64 hex characters)
       const crypto = await import('crypto')
       const resetToken = crypto.randomBytes(32).toString('hex')
       const tokenExpiry = new Date(Date.now() + 3600000) // 1 ชั่วโมง
-
-      console.log('🔑 สร้าง Reset Token:', {
-        token: resetToken.substring(0, 8) + '...',
-        expiry: tokenExpiry.toLocaleString('th-TH')
-      })
 
       // บันทึก Token ลงฐานข้อมูล
       await prisma[userTable].update({
@@ -725,8 +653,6 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
           reset_token_expiry: tokenExpiry
         }
       })
-
-      console.log('✅ บันทึก Reset Token ลงฐานข้อมูลสำเร็จ')
 
       return {
         success: true,
@@ -742,7 +668,7 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
       }
 
     } catch (error) {
-      console.error('❌ Error in forgot-password:', error)
+      console.error('Error in /auth/forgot-password:', error)
       set.status = 500
       return {
         success: false,
@@ -754,8 +680,6 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
   // API สำหรับรีเซ็ตรหัสผ่านด้วย Token
   .post('/reset-password', async ({ body, set }) => {
     try {
-      console.log('🔐 เรียกใช้ API รีเซ็ตรหัสผ่าน')
-
       if (!body.token || !body.password) {
         set.status = 400
         return {
@@ -771,8 +695,6 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
           message: 'รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร'
         }
       }
-
-      console.log('🔍 กำลังตรวจสอบ Reset Token...')
 
       // หา Token ในฐานข้อมูลจาก 4 tables
       let user = null
@@ -840,18 +762,12 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
       }
 
       if (!user) {
-        console.log('❌ Token ไม่ถูกต้องหรือหมดอายุแล้ว')
         set.status = 400
         return {
           success: false,
           message: 'Token ไม่ถูกต้องหรือหมดอายุแล้ว'
         }
       }
-
-      console.log('✅ พบ Token ที่ถูกต้อง:', {
-        table: userTable,
-        email: user.email
-      })
 
       // เข้ารหัสรหัสผ่านใหม่
       const bcrypt = await import('bcryptjs')
@@ -870,15 +786,13 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
         }
       })
 
-      console.log('✅ เปลี่ยนรหัสผ่านสำเร็จ')
-
       return {
         success: true,
         message: 'เปลี่ยนรหัสผ่านสำเร็จ กรุณาเข้าสู่ระบบด้วยรหัสผ่านใหม่'
       }
 
     } catch (error) {
-      console.error('❌ Error in reset-password:', error)
+      console.error('Error in /auth/reset-password:', error)
       set.status = 500
       return {
         success: false,
@@ -890,8 +804,6 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
   // API สำหรับอัปเดตโปรไฟล์ตนเอง
   .put('/profile', async ({ request, set, body }) => {
     try {
-      console.log('📝 เรียกใช้ API อัปเดตโปรไฟล์')
-
       // ตรวจสอบ authentication
       const user = await authMiddleware(request, set)
       if (user.success === false) {
@@ -905,10 +817,6 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
       const authHeader = headersObj.authorization
       const token = authHeader.substring(7)
       const decoded = jwt.verify(token, process.env.JWT_SECRET)
-
-
-      console.log('🔍 ผู้ใช้:', user.email, 'Role:', user.role)
-      console.log('🗂️ Original userId from token:', decoded.userId)
 
       // ข้อมูลพื้นฐานที่ทุกคนแก้ไขได้
       const basicFields = [
@@ -925,14 +833,10 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
       // เฉพาะ admin เท่านั้นที่แก้ไข position ได้
       if (user.role === 'admin') {
         allowedFields.push(...adminOnlyFields)
-        console.log('✅ Admin detected: allowing position updates')
       } else {
-        console.log('⚠️ Non-admin user: position updates blocked, department updates allowed')
-
         // เช็คว่ามีการพยายามแก้ไข position หรือไม่
         const blockedAttempts = adminOnlyFields.filter(field => body[field] !== undefined)
         if (blockedAttempts.length > 0) {
-          console.log('🚫 Blocked attempts to modify:', blockedAttempts)
           set.status = 403
           return {
             success: false,
@@ -949,8 +853,6 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
           updateData[field] = body[field]
         }
       }
-
-      console.log('📋 ข้อมูลที่จะอัปเดต:', updateData)
 
       // ตรวจสอบว่ามีข้อมูลที่จะอัปเดตหรือไม่
       if (Object.keys(updateData).length === 0) {
@@ -993,12 +895,8 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
           }
       }
 
-      console.log('🎯 อัปเดต table:', tableName, 'ID:', userId)
-
       // ตรวจสอบ userId ว่าเป็น undefined หรือไม่
       if (!userId) {
-        console.log('❌ userId is undefined!')
-        console.log('🔍 User object:', JSON.stringify(user, null, 2))
         set.status = 400
         return {
           success: false,
@@ -1008,8 +906,6 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
 
       // ตรวจสอบ email และ citizen_id ซ้ำก่อนอัปเดต
       if (updateData.email || updateData.citizen_id) {
-        console.log('🔍 ตรวจสอบข้อมูลซ้ำ...')
-
         // ตรวจสอบ email ซ้ำในทุก table ยกเว้นข้อมูลตัวเอง
         if (updateData.email) {
           const emailChecks = await Promise.all([
@@ -1021,7 +917,6 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
 
           const duplicateEmail = emailChecks.find(check => check !== null)
           if (duplicateEmail) {
-            console.log('❌ อีเมลนี้ถูกใช้งานแล้ว')
             set.status = 409
             return {
               success: false,
@@ -1041,7 +936,6 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
 
           const duplicateCitizen = citizenChecks.find(check => check !== null)
           if (duplicateCitizen) {
-            console.log('❌ เลขบัตรประชาชนนี้ถูกใช้งานแล้ว')
             set.status = 409
             return {
               success: false,
@@ -1049,8 +943,6 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
             }
           }
         }
-
-        console.log('✅ ไม่พบข้อมูลซ้ำ')
       }
 
       // อัปเดตข้อมูลในฐานข้อมูล
@@ -1082,8 +974,6 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
           }
         }
       })
-
-      console.log('✅ อัปเดตโปรไฟล์สำเร็จ')
 
       // ปรับ field ให้เหมือนกันทุก table (เหมือนใน login API)
       let responseUser = { ...updatedUser }
@@ -1120,7 +1010,7 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
       }
 
     } catch (error) {
-      console.error('❌ Error updating profile:', error)
+      console.error('Error in /auth/profile (PUT):', error)
       set.status = 500
       return {
         success: false,
@@ -1132,8 +1022,6 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
   // API สำหรับดูโปรไฟล์ตนเอง
   .get('/profile', async ({ request, set }) => {
     try {
-      console.log('📋 เรียกใช้ API ดูโปรไฟล์')
-
       // ตรวจสอบ authentication
       const user = await authMiddleware(request, set)
       if (user.success === false) {
@@ -1147,7 +1035,7 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
       }
 
     } catch (error) {
-      console.error('❌ Error getting profile:', error)
+      console.error('Error in /auth/profile (GET):', error)
       set.status = 500
       return {
         success: false,
