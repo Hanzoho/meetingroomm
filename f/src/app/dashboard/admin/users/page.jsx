@@ -309,13 +309,11 @@ export default function UserManagement() {
 
         try {
             const token = authUtils.getToken()
-            const response = await fetch(`/api/protected/admin/users/${userId}`, {
+            const response = await fetch(`/api/protected/admin/users/${userId}?role=${userRole}`, {
                 method: 'DELETE',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ role: userRole })
+                    'Authorization': `Bearer ${token}`
+                }
             })
 
             if (response.ok) {

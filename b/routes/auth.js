@@ -155,6 +155,7 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
             role_id: roleId, // 3 = user
             position: body.position,
             department: body.department || null,
+            status: 'pending', // สถานะ: pending - รอ admin อนุมัติ
             // Address fields - รับ IDs และ zip_code
             province_id: body.province_id ? parseInt(body.province_id) : null,
             district_id: body.district_id ? parseInt(body.district_id) : null,
@@ -174,6 +175,7 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
             role_id: roleId, // 2 = officer
             position: body.position,
             department: departmentFromPosition || body.department,
+            status: 'pending', // สถานะ: pending - รอ admin อนุมัติ
             // Address fields - รับ IDs และ zip_code  
             province_id: body.province_id ? parseInt(body.province_id) : null,
             district_id: body.district_id ? parseInt(body.district_id) : null,
@@ -194,6 +196,7 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
             position: body.position, // เก็บตำแหน่งภาษาไทยตามที่ผู้ใช้เลือก
             department: departmentFromPosition ||
               (executiveType === 'university_executive' ? 'สำนักงานอธิการบดี' : body.department),
+            status: 'pending', // สถานะ: pending - รอ admin อนุมัติ
             // Address fields - รับ IDs และ zip_code
             province_id: body.province_id ? parseInt(body.province_id) : null,
             district_id: body.district_id ? parseInt(body.district_id) : null,
