@@ -1,0 +1,2 @@
+# Keep this folder in git but ignore its contents
+# This ensures the uploads directory exists when someone clones the repo

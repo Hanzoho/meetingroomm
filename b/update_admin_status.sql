@@ -1,0 +1,1 @@
+UPDATE "admin" SET "status" = 'approved' WHERE "status" = 'pending' OR "status" IS NULL;

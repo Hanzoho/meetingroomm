@@ -1,0 +1,277 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model admin {
+  admin_id   Int     @id @default(autoincrement())
+  role_id    Int
+  first_name String  @db.VarChar(255)
+  last_name  String  @db.VarChar(255)
+  email      String  @unique @db.VarChar(255)
+  password   String  @db.VarChar(255)
+  citizen_id String? @unique @db.Char(13)
+  position   String? @db.VarChar(255)
+  department String? @db.VarChar(255)
+  status     String? @default("pending") @db.VarChar(20)
+
+  // Reset Password fields
+  reset_token        String?   @db.VarChar(255)
+  reset_token_expiry DateTime? @db.Timestamptz(6)
+
+  // Address fields - เชื่อมโยงกับ Address tables
+  province_id    Int?
+  district_id    Int?
+  subdistrict_id Int?
+  zip_code       Int? // เก็บไว้เป็น backup หรืออาจลบทิ้งได้
+
+  profile_image Bytes? // เก็บรูปโปรไฟล์ใน database เป็น binary data (มี fallback ไป UI Avatars ถ้าไม่มี)
+  created_at    DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime? @default(now()) @db.Timestamptz(6)
+
+  // Relations
+  roles       roles        @relation(fields: [role_id], references: [role_id], onDelete: NoAction, onUpdate: NoAction)
+  province    Province?    @relation("admin_province", fields: [province_id], references: [province_id])
+  district    District?    @relation("admin_district", fields: [district_id], references: [district_id])
+  subdistrict Subdistrict? @relation("admin_subdistrict", fields: [subdistrict_id], references: [subdistrict_id])
+}
+
+model equipment {
+  equipment_id Int          @id @default(autoincrement())
+  room_id      Int
+  equipment_n  String       @db.VarChar(255)
+  quantity     Int
+  created_at   DateTime?    @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime?    @default(now()) @db.Timestamptz(6)
+  meeting_room meeting_room @relation(fields: [room_id], references: [room_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model meeting_room {
+  room_id     Int           @id @default(autoincrement())
+  room_name   String        @db.VarChar(255)
+  capacity    Int
+  location_m  String        @db.VarChar(255)
+  department  String        @db.VarChar(255)
+  status_m    String?       @db.VarChar(255)
+  details_m   String?       @db.VarChar(255)
+  created_at  DateTime?     @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime?     @default(now()) @db.Timestamptz(6)
+  image       Bytes?
+  equipment   equipment[]
+  reservation reservation[]
+  review      review[]
+}
+
+model officer {
+  officer_id Int     @id @default(autoincrement())
+  role_id    Int
+  first_name String  @db.VarChar(255)
+  last_name  String  @db.VarChar(255)
+  email      String  @unique @db.VarChar(255)
+  password   String  @db.VarChar(255)
+  citizen_id String? @unique @db.Char(13)
+  position   String? @db.VarChar(255)
+  department String? @db.VarChar(255)
+  status     String? @default("pending") @db.VarChar(20)
+
+  // Reset Password fields
+  reset_token        String?   @db.VarChar(255)
+  reset_token_expiry DateTime? @db.Timestamptz(6)
+
+  // Address fields - เชื่อมโยงกับ Address tables
+  province_id    Int?
+  district_id    Int?
+  subdistrict_id Int?
+  zip_code       Int? // เก็บไว้เป็น backup หรืออาจลบทิ้งได้
+
+  profile_image Bytes? // เก็บรูปโปรไฟล์ใน database เป็น binary data (มี fallback ไป UI Avatars ถ้าไม่มี)
+  created_at    DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime? @default(now()) @db.Timestamptz(6)
+
+  // Relations
+  roles       roles         @relation(fields: [role_id], references: [role_id], onDelete: NoAction, onUpdate: NoAction)
+  province    Province?     @relation("officer_province", fields: [province_id], references: [province_id])
+  district    District?     @relation("officer_district", fields: [district_id], references: [district_id])
+  subdistrict Subdistrict?  @relation("officer_subdistrict", fields: [subdistrict_id], references: [subdistrict_id])
+  reservation reservation[]
+}
+
+model reservation {
+  reservation_id  Int           @id @default(autoincrement())
+  user_id         Int?
+  room_id         Int?
+  start_at        DateTime      @db.Date
+  end_at          DateTime      @db.Date
+  start_time      DateTime?     @db.Timestamp(6)
+  end_time        DateTime?     @db.Timestamp(6)
+  status_r        String?       @default("pending") @db.VarChar(255)
+  officer_id      Int?
+  details_r       String?       @db.VarChar(255)
+  rejected_reason String?       @db.Text // เหตุผลในการปฏิเสธการจอง
+  booking_dates   String?       @db.Text // CSV string ของวันที่ทั้งหมดที่จอง เช่น "2025-08-29,2025-08-30,2025-08-31"
+  is_multi_day    Boolean?      @default(false) // flag บอกว่าเป็น multi-day booking หรือไม่
+  created_at      DateTime?     @default(now()) @db.Timestamp(6)
+  updated_at      DateTime?     @default(now()) @db.Timestamp(6)
+  officer         officer?      @relation(fields: [officer_id], references: [officer_id], onDelete: NoAction, onUpdate: NoAction)
+  meeting_room    meeting_room? @relation(fields: [room_id], references: [room_id], onDelete: NoAction, onUpdate: NoAction)
+  users           users?        @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model review {
+  review_id    Int           @id @default(autoincrement())
+  user_id      Int?
+  room_id      Int?
+  comment      String?
+  rating       Int?
+  created_at   DateTime?     @default(now()) @db.Timestamp(6)
+  meeting_room meeting_room? @relation(fields: [room_id], references: [room_id], onDelete: NoAction, onUpdate: NoAction)
+  users        users?        @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model roles {
+  role_id     Int         @id @default(autoincrement())
+  role_name   String      @db.VarChar(50)
+  role_status String?     @default("active") @db.VarChar(50)
+  admin       admin[]
+  executive   executive[]
+  officer     officer[]
+  users       users[]
+}
+
+model executive {
+  executive_id Int     @id @default(autoincrement())
+  role_id      Int
+  first_name   String  @db.VarChar(255)
+  last_name    String  @db.VarChar(255)
+  email        String  @unique @db.VarChar(255)
+  password     String  @db.VarChar(255)
+  citizen_id   String? @unique @db.Char(13)
+  position     String  @db.VarChar(255) // "university_executive" หรือ "faculty_executive"
+  department   String  @db.VarChar(255) // สำนักงานอธิการบดี หรือ ชื่อคณะ
+  status       String? @default("pending") @db.VarChar(20)
+
+  // Reset Password fields
+  reset_token        String?   @db.VarChar(255)
+  reset_token_expiry DateTime? @db.Timestamptz(6)
+
+  // Address fields - เชื่อมโยงกับ Address tables
+  province_id    Int?
+  district_id    Int?
+  subdistrict_id Int?
+  zip_code       Int? // เก็บไว้เป็น backup หรืออาจลบทิ้งได้
+
+  profile_image Bytes? // เก็บรูปโปรไฟล์ใน database เป็น binary data (มี fallback ไป UI Avatars ถ้าไม่มี)
+  created_at    DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime? @default(now()) @db.Timestamptz(6)
+
+  // Relations
+  roles       roles        @relation(fields: [role_id], references: [role_id], onDelete: NoAction, onUpdate: NoAction)
+  province    Province?    @relation("executive_province", fields: [province_id], references: [province_id])
+  district    District?    @relation("executive_district", fields: [district_id], references: [district_id])
+  subdistrict Subdistrict? @relation("executive_subdistrict", fields: [subdistrict_id], references: [subdistrict_id])
+}
+
+model users {
+  user_id    Int     @id(map: "user_pkey") @default(autoincrement())
+  role_id    Int
+  first_name String  @db.VarChar(255)
+  last_name  String  @db.VarChar(255)
+  email      String  @unique(map: "user_email_key") @db.VarChar(255)
+  password   String  @db.VarChar(255)
+  citizen_id String? @unique(map: "user_citizen_id_key") @db.Char(13)
+  position   String? @db.VarChar(255)
+  department String? @db.VarChar(255)
+  status     String? @default("pending") @db.VarChar(20)
+
+  // Reset Password fields
+  reset_token        String?   @db.VarChar(255)
+  reset_token_expiry DateTime? @db.Timestamptz(6)
+
+  // Address fields - เชื่อมโยงกับ Address tables
+  province_id    Int?
+  district_id    Int?
+  subdistrict_id Int?
+  zip_code       Int? // เก็บไว้เป็น backup หรืออาจลบทิ้งได้
+
+  profile_image Bytes? // เก็บรูปโปรไฟล์ใน database เป็น binary data (มี fallback ไป UI Avatars ถ้าไม่มี)
+  created_at    DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime? @default(now()) @db.Timestamptz(6)
+
+  // Relations
+  reservation reservation[]
+  review      review[]
+  roles       roles         @relation(fields: [role_id], references: [role_id], onDelete: NoAction, onUpdate: NoAction, map: "user_role_id_fkey")
+  province    Province?     @relation("users_province", fields: [province_id], references: [province_id])
+  district    District?     @relation("users_district", fields: [district_id], references: [district_id])
+  subdistrict Subdistrict?  @relation("users_subdistrict", fields: [subdistrict_id], references: [subdistrict_id])
+}
+
+// ==================== ADDRESS TABLES ====================
+// ตารางจังหวัด (tb_Province)
+model Province {
+  province_id   Int        @id @default(autoincrement())
+  province_name String     @db.VarChar(255)
+  districts     District[]
+
+  // Relations to users
+  users     users[]     @relation("users_province")
+  admin     admin[]     @relation("admin_province")
+  officer   officer[]   @relation("officer_province")
+  executive executive[] @relation("executive_province")
+
+  @@map("tb_Province")
+}
+
+// ตารางอำเภอ (tb_District) 
+model District {
+  district_id   Int           @id @default(autoincrement())
+  province_id   Int
+  district_name String        @db.VarChar(255)
+  province      Province      @relation(fields: [province_id], references: [province_id])
+  subdistricts  Subdistrict[]
+
+  // Relations to users
+  users     users[]     @relation("users_district")
+  admin     admin[]     @relation("admin_district")
+  officer   officer[]   @relation("officer_district")
+  executive executive[] @relation("executive_district")
+
+  @@map("tb_District")
+}
+
+// ตารางตำบล (tb_Subdistrict)
+model Subdistrict {
+  subdistrict_id   Int      @id @default(autoincrement())
+  district_id      Int
+  subdistrict_name String   @db.VarChar(255)
+  zip_code         String?  @db.VarChar(10) // รหัสไปรษณีย์
+  district         District @relation(fields: [district_id], references: [district_id])
+
+  // Relations to users  
+  users     users[]     @relation("users_subdistrict")
+  admin     admin[]     @relation("admin_subdistrict")
+  officer   officer[]   @relation("officer_subdistrict")
+  executive executive[] @relation("executive_subdistrict")
+
+  @@map("tb_Subdistrict")
+}
+
+// Email Log - เก็บประวัติการส่งอีเมลและจำกัดโควต้า
+model email_log {
+  id         Int      @id @default(autoincrement())
+  recipient  String   @db.VarChar(255)
+  subject    String   @db.VarChar(500)
+  email_type String   @db.VarChar(50) // 'new_reservation', 'reservation_approved', 'reservation_rejected'
+  sent_date  DateTime @default(now()) @db.Timestamptz(6)
+  status     String   @default("sent") @db.VarChar(20) // 'sent', 'failed'
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([sent_date], name: "idx_email_log_sent_date")
+  @@index([email_type], name: "idx_email_log_type")
+}

@@ -1,0 +1,373 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --radius: 0.625rem;
+  --background: 0 0% 100%;
+  --foreground: 285 5% 14%;
+  --card: 0 0% 100%;
+  --card-foreground: 285 5% 14%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 285 5% 14%;
+  --primary: 285 6% 21%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 286 1% 97%;
+  --secondary-foreground: 285 6% 21%;
+  --muted: 286 1% 97%;
+  --muted-foreground: 285 2% 55%;
+  --accent: 286 1% 97%;
+  --accent-foreground: 285 6% 21%;
+  --destructive: 27 25% 58%;
+  --border: 286 4% 92%;
+  --input: 286 4% 92%;
+  --ring: 286 2% 71%;
+  --chart-1: 41 22% 65%;
+  --chart-2: 185 12% 60%;
+  --chart-3: 227 7% 40%;
+  --chart-4: 84 19% 83%;
+  --chart-5: 70 19% 77%;
+  --sidebar-background: 0 0% 98%;
+  --sidebar-foreground: 285 5% 14%;
+  --sidebar-primary: 285 6% 21%;
+  --sidebar-primary-foreground: 0 0% 98%;
+  --sidebar-accent: 286 1% 97%;
+  --sidebar-accent-foreground: 285 6% 21%;
+  --sidebar-border: 286 4% 92%;
+  --sidebar-ring: 286 2% 71%;
+}
+
+.dark {
+  --background: 285 5% 14%;
+  --foreground: 0 0% 98%;
+  --card: 285 6% 21%;
+  --card-foreground: 0 0% 98%;
+  --popover: 285 6% 21%;
+  --popover-foreground: 0 0% 98%;
+  --primary: 286 4% 92%;
+  --primary-foreground: 285 6% 21%;
+  --secondary: 286 6% 27%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 286 6% 27%;
+  --muted-foreground: 286 2% 71%;
+  --accent: 286 6% 27%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 22 19% 70%;
+  --border: 0 0% 100% / 10%;
+  --input: 0 0% 100% / 15%;
+  --ring: 286 2% 55%;
+  --chart-1: 264 24% 49%;
+  --chart-2: 162 17% 70%;
+  --chart-3: 70 19% 77%;
+  --chart-4: 304 27% 63%;
+  --chart-5: 16 25% 65%;
+  --sidebar-background: 285 6% 21%;
+  --sidebar-foreground: 0 0% 98%;
+  --sidebar-primary: 264 24% 49%;
+  --sidebar-primary-foreground: 0 0% 98%;
+  --sidebar-accent: 286 6% 27%;
+  --sidebar-accent-foreground: 0 0% 98%;
+  --sidebar-border: 0 0% 100% / 10%;
+  --sidebar-ring: 286 2% 55%;
+}
+
+@layer base {
+  * {
+    @apply border-border/20 outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Noto Sans Thai', system-ui, -apple-system, sans-serif;
+  }
+}
+
+/* Custom Scrollbar Styles for Select Elements */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #10b981 #f3f4f6;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #10b981, #059669);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #059669, #047857);
+}
+
+/* Style for select dropdown options */
+select.custom-scrollbar option {
+  padding: 8px 12px;
+  background-color: white;
+  color: #374151;
+}
+
+select.custom-scrollbar option:hover {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+/* Force dropdown to show below - More aggressive approach */
+select.custom-scrollbar {
+  /* Reset any inherited positioning */
+  position: relative !important;
+  z-index: 1 !important;
+
+  /* Ensure proper display */
+  display: block !important;
+  overflow: visible !important;
+}
+
+/* Force select dropdown to appear below on focus/click */
+select.custom-scrollbar:focus,
+select.custom-scrollbar:active {
+  position: relative !important;
+  z-index: 10 !important;
+  transform: translateY(0) !important;
+}
+
+/* Browser-specific fixes */
+select.custom-scrollbar::-ms-expand {
+  display: none;
+}
+
+/* Webkit specific dropdown positioning */
+@supports (-webkit-appearance: none) {
+  select.custom-scrollbar {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    background-position: right 12px center !important;
+    background-repeat: no-repeat !important;
+    background-size: 16px !important;
+  }
+}
+
+/* Firefox specific */
+@-moz-document url-prefix() {
+  select.custom-scrollbar {
+    -moz-appearance: none !important;
+    appearance: none !important;
+    background-image: none !important;
+  }
+}
+
+/* Force dropdown to appear below the select element */
+select {
+  position: relative;
+}
+
+/* Additional styles to help with dropdown positioning */
+.relative select {
+  z-index: 10;
+}
+
+/* Ensure dropdown appears downward */
+select option {
+  direction: ltr;
+}
+
+/* Fix for browsers that show dropdown upward */
+@supports (-webkit-appearance: none) {
+  select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+}
+
+/* Force dropdown to show below */
+select {
+  direction: ltr !important;
+}
+
+select option {
+  direction: ltr !important;
+  text-align: left !important;
+}
+
+/* ===================================== */
+/* Modal Animations for Edit Reservation */
+/* ===================================== */
+
+/* Fade in animation for modal backdrop */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Slide up animation for modal content */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Shake animation for conflict warning */
+@keyframes shake {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-3px);
+  }
+
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(3px);
+  }
+}
+
+/* Apply animations */
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.3s ease-out;
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+/* Custom Scrollbar Styles */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: rgba(156, 163, 175, 0.5);
+  border-radius: 20px;
+  border: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(156, 163, 175, 0.8);
+}
+
+.scrollbar-thumb-gray-300::-webkit-scrollbar-thumb {
+  background-color: rgb(209, 213, 219);
+}
+
+.scrollbar-thumb-gray-400::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(156, 163, 175);
+}
+
+.scrollbar-track-transparent::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Modal Animation - เด้งออกมากลางจอ */
+@keyframes modal-appear {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.7);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.animate-modal-appear {
+  animation: modal-appear 0.3s ease-out;
+}
+
+/* Backdrop Blur Effect */
+.backdrop-blur-light {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Mobile Touch Optimization */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Allow text selection for inputs and content areas */
+input, textarea, [contenteditable], .select-text {
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
+}
+
+/* Allow text selection for common text content */
+p, span, div, h1, h2, h3, h4, h5, h6, td, th, li {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* Disable text selection for buttons and interactive elements */
+button, a, .no-select {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+}
+
+/* Touch-friendly buttons */
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+}
+
+/* Prevent zoom on input focus on iOS */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}

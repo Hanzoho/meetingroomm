@@ -1,0 +1,44 @@
+# dependencies (bun install)
+node_modules
+
+# output
+out
+dist
+*.tgz
+
+# code coverage
+coverage
+*.lcov
+
+# logs
+logs
+*.log
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# dotenv environment variable files - NEVER COMMIT THESE!
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# uploaded files - เก็บใน database แล้ว
+uploads/*
+!uploads/.gitkeep
+
+# caches
+.eslintcache
+.cache
+*.tsbuildinfo
+
+# IntelliJ based IDEs
+.idea
+
+# Finder (MacOS) folder config
+.DS_Store
+
+# VS Code settings (optional - อาจจะเก็บหรือไม่เก็บก็ได้)
+.vscode/
+
+# Note: เก็บ generated/prisma ใน Git เพื่อให้ clone แล้วใช้ได้เลย
+# /generated/prisma
