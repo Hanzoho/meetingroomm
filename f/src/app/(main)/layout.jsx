@@ -30,10 +30,12 @@ export default function LayoutForMainPages({ children }) {
     try {
       console.log('🔄 Layout: Refreshing user data...')
       
+      
       // เรียก API เพื่อดึงข้อมูลใหม่
       const response = await authAPI.getProfile()
       console.log('📦 Layout: Profile API response:', response)
       
+
       if (response.success && response.profile) {
         console.log('✅ Layout: Updated user data:', {
           role: response.profile.role,
@@ -47,6 +49,7 @@ export default function LayoutForMainPages({ children }) {
           preserveImageUrl: preserveImageUrl
         })
         
+
         // 🔥 ถ้า preserveImageUrl = true ให้เก็บ profile_image เดิมไว้
         const updatedProfile = preserveImageUrl && user?.profile_image 
           ? { ...response.profile, profile_image: user.profile_image }
